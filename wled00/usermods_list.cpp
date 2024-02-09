@@ -11,7 +11,7 @@
  */
 //#include "../usermods/EXAMPLE_v2/usermod_v2_example.h"
 
-#define USERMOD_BAERNERZIT `USERMOD_BAERNERZIT`
+#define USERMOD_BAERNERZYT `USERMOD_BAERNERZYT`
 
 
 #ifdef USERMOD_BATTERY
@@ -330,6 +330,10 @@ void registerUsermods()
 
   #ifdef USERMOD_WORDCLOCK
   usermods.add(new WordClockUsermod());
+  #endif
+
+  #ifdef USERMOD_BAERNERZYT
+  usermods.add(new BaernerZytUsermod());
   #endif
 
   #ifdef USERMOD_MY9291

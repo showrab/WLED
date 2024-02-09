@@ -14,135 +14,225 @@
  * diplayItIs: enable/disable display of "Es ist" on the clock.
  */
 
-class WordClockUsermod : public Usermod 
+class BaernerZytUsermod : public Usermod 
 {
   private:
     unsigned long lastTime = 0;
     int lastTimeMinutes = -1;
+    int lastTimeHours = -1;
+    bool testStarted = false;
 
     // set your config variables to their boot default value (this can also be done in readFromConfig() or a constructor if you prefer)
-    bool usermodActive = false;
-    bool displayItIs = false;
-    int ledOffset = 100;
-    bool meander = false;
-    bool nord = false;
+    bool usermodActive = true;
+    bool displayItIs = true;
+    int ledOffset = 0;
+    int layout = 1;
+    bool test = false;
     
     // defines for mask sizes
-    #define maskSizeLeds        114
+    #define maskSizeLeds        256
     #define maskSizeMinutes     12
-    #define maskSizeMinutesMea  12
     #define maskSizeHours       6
-    #define maskSizeHoursMea    6
-    #define maskSizeItIs        5
+    #define maskSizeItIs        6
     #define maskSizeMinuteDots  4
 
-    // "minute" masks
-    // Normal wiring
-    const int maskMinutes[14][maskSizeMinutes] = 
+    const int maskMinutes16x16_0[12][maskSizeMinutes] = {};
+    const int maskHours16x16_0[13][maskSizeHours] = {};
+    const int maskMinuteDots0[maskSizeMinuteDots] = {};
+
+    //16x16 matrix wiring
+    //  0- 15  ES ISCH FÜF
+    // 16- 31   ZÄH VIERTU
+    // 32- 47  ZWÄNZG  VOR
+    // 48- 63  AB    HALBI    
+    // 64- 79  EISDRÜZWÖI
+    // 80- 95  VIERI  FÜFI 
+    // 96-111  SÄCHSIBNI
+    //112-127  NÜNI  ACHTI
+    //128-143  ZÄHNI EUFI
+    //144-159  1234 ZWÖUFI
+    #define FUEF_1  8,   9,  10
+    #define ZAEH_1 16,  17,  18
+    #define VIERTU_1 20,  21,  22,  23,  24,  25
+    #define ZWAENZG_1 32,  33,  34,  35,  36,  37
+    #define HAUBI_1 51,  52,  53,  54,  55
+    #define AB_1 48,  49
+    #define VOR_1 39,  40,  41
+    const int maskMinutes16x16_1[12][maskSizeMinutes] = 
     {
-      {107, 108, 109,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1}, // 0 - 00
-      {  7,   8,   9,  10,  40,  41,  42,  43,  -1,  -1,  -1,  -1}, // 1 - 05 fünf nach
-      { 11,  12,  13,  14,  40,  41,  42,  43,  -1,  -1,  -1,  -1}, // 2 - 10 zehn nach
-      { 26,  27,  28,  29,  30,  31,  32,  -1,  -1,  -1,  -1,  -1}, // 3 - 15 viertel
-      { 15,  16,  17,  18,  19,  20,  21,  40,  41,  42,  43,  -1}, // 4 - 20 zwanzig nach
-      {  7,   8,   9,  10,  33,  34,  35,  44,  45,  46,  47,  -1}, // 5 - 25 fünf vor halb
-      { 44,  45,  46,  47,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1}, // 6 - 30 halb
-      {  7,   8,   9,  10,  40,  41,  42,  43,  44,  45,  46,  47}, // 7 - 35 fünf nach halb
-      { 15,  16,  17,  18,  19,  20,  21,  33,  34,  35,  -1,  -1}, // 8 - 40 zwanzig vor
-      { 22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  -1}, // 9 - 45 dreiviertel
-      { 11,  12,  13,  14,  33,  34,  35,  -1,  -1,  -1,  -1,  -1}, // 10 - 50 zehn vor
-      {  7,   8,   9,  10,  33,  34,  35,  -1,  -1,  -1,  -1,  -1}, // 11 - 55 fünf vor
-      { 26,  27,  28,  29,  30,  31,  32,  40,  41,  42,  43,  -1}, // 12 - 15 alternative viertel nach
-      { 26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  -1,  -1}  // 13 - 45 alternative viertel vor
+      {                   -1}, // 0 - 00
+      { FUEF_1,    AB_1,  -1}, // 1 - 05 fünf nach
+      { ZAEH_1,    AB_1,  -1}, // 2 - 10 zehn nach
+      { VIERTU_1,  AB_1,  -1}, // 3 - 15 viertel nach
+      { ZWAENZG_1, AB_1,  -1}, // 4 - 20 zwanzig nach
+      { FUEF_1,   VOR_1,  -1}, // 5 - 25 fünf vor halb
+      { HAUBI_1,          -1}, // 6 - 30 halb
+      { FUEF_1,    AB_1,  -1}, // 7 - 35 fünf nach halb
+      { ZWAENZG_1,VOR_1,  -1}, // 8 - 40 zwanzig vor
+      { VIERTU_1, VOR_1,  -1}, // 13 - 45 viertel vor
+      { ZAEH_1,   VOR_1,  -1}, // 10 - 50 zehn vor
+      { FUEF_1,   VOR_1,  -1}, // 11 - 55 fünf vor
     };
-
-    // Meander wiring
-    const int maskMinutesMea[14][maskSizeMinutesMea] = 
-    {
-      { 99, 100, 101,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1}, // 0 - 00
-      {  7,   8,   9,  10,  33,  34,  35,  36,  -1,  -1,  -1,  -1}, // 1 - 05 fünf nach
-      { 18,  19,  20,  21,  33,  34,  35,  36,  -1,  -1,  -1,  -1}, // 2 - 10 zehn nach
-      { 26,  27,  28,  29,  30,  31,  32,  -1,  -1,  -1,  -1,  -1}, // 3 - 15 viertel
-      { 11,  12,  13,  14,  15,  16,  17,  33,  34,  35,  36,  -1}, // 4 - 20 zwanzig nach
-      {  7,   8,   9,  10,  41,  42,  43,  44,  45,  46,  47,  -1}, // 5 - 25 fünf vor halb
-      { 44,  45,  46,  47,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1}, // 6 - 30 halb
-      {  7,   8,   9,  10,  33,  34,  35,  36,  44,  45,  46,  47}, // 7 - 35 fünf nach halb
-      { 11,  12,  13,  14,  15,  16,  17,  41,  42,  43,  -1,  -1}, // 8 - 40 zwanzig vor
-      { 22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  -1}, // 9 - 45 dreiviertel
-      { 18,  19,  20,  21,  41,  42,  43,  -1,  -1,  -1,  -1,  -1}, // 10 - 50 zehn vor
-      {  7,   8,   9,  10,  41,  42,  43,  -1,  -1,  -1,  -1,  -1}, // 11 - 55 fünf vor
-      { 26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  -1}, // 12 - 15 alternative viertel nach
-      { 26,  27,  28,  29,  30,  31,  32,  41,  42,  43,  -1,  -1}  // 13 - 45 alternative viertel vor
-    };
-
-
     // hour masks
     // Normal wiring
-    const int maskHours[13][maskSizeHours] = 
+    const int maskHours16x16_1[13][maskSizeHours] = 
     {
-      { 55,  56,  57,  -1,  -1,  -1}, // 01: ein
-      { 55,  56,  57,  58,  -1,  -1}, // 01: eins
-      { 62,  63,  64,  65,  -1,  -1}, // 02: zwei
-      { 66,  67,  68,  69,  -1,  -1}, // 03: drei
-      { 73,  74,  75,  76,  -1,  -1}, // 04: vier
-      { 51,  52,  53,  54,  -1,  -1}, // 05: fünf
-      { 77,  78,  79,  80,  81,  -1}, // 06: sechs
-      { 88,  89,  90,  91,  92,  93}, // 07: sieben
-      { 84,  85,  86,  87,  -1,  -1}, // 08: acht
-      {102, 103, 104, 105,  -1,  -1}, // 09: neun
-      { 99, 100, 101, 102,  -1,  -1}, // 10: zehn
-      { 49,  50,  51,  -1,  -1,  -1}, // 11: elf
-      { 94,  95,  96,  97,  98,  -1}  // 12: zwölf and 00: null
+      { 64,  65,  66,            -1}, // 01: ein
+      { 64,  65,  66,            -1}, // 01: eins
+      { 68,  69,  70,  71,       -1}, // 02: zwei
+      { 72,  73,  74,            -1}, // 03: drei
+      { 80,  81,  82,  83,  84,  -1}, // 04: vier
+      { 86,  87,  88,  89,       -1}, // 05: fünf
+      { 96,  97,  98,  99, 100, 101}, // 06: sechs
+      {100, 101, 102, 103, 104,  -1}, // 07: sieben
+      {112, 113, 114, 115, 116,  -1}, // 08: acht
+      {118, 119, 120, 121,       -1}, // 09: neun
+      {128, 129, 130, 131, 132,  -1}, // 10: zehn
+      {134, 135, 136, 137,       -1}, // 11: elf
+      {148, 149, 150, 151, 152, 153}  // 12: zwölf and 00: null
     };
-    // Meander wiring
-    const int maskHoursMea[13][maskSizeHoursMea] = 
+    // mask minute dots
+    const int maskMinuteDots1[maskSizeMinuteDots] = {144, 145, 146, 147};
+
+    //16x16 matrix wiring (11x9 Schweizerdeutsch)
+    //  0- 15  ES ISCH FÜF
+    // 16- 31  ZÄH  VIERTU
+    // 32- 47  ZWÄNZG AB 
+    // 48- 63  VOR HALBI Z
+    // 64- 79  EISZWÖIDRÜW
+    // 80- 95  UVIERIFÜFIÖ
+    // 96-111  FSÄCHSIBNIU
+    //112-127  IACHTINÜNIF
+    //128-143  ZÄHNI+1234I
+    #define FUEF_2  8,   9,  10
+    #define ZAEH_2 16,  17,  18
+    #define VIERTU_2 21,  22,  23,  24,  25,  26
+    #define ZWAENZG_2 32,  33,  34,  35,  36,  37
+    #define HAUBI_2 52,  53,  54,  55,  56
+    #define AB_2 39,  40
+    #define VOR_2 48,  49,  50
+    const int maskMinutes16x16_2[12][maskSizeMinutes] = 
     {
-      { 63,  64,  65,  -1,  -1,  -1}, // 01: ein
-      { 62,  63,  64,  65,  -1,  -1}, // 01: eins
-      { 55,  56,  57,  58,  -1,  -1}, // 02: zwei
-      { 66,  67,  68,  69,  -1,  -1}, // 03: drei
-      { 73,  74,  75,  76,  -1,  -1}, // 04: vier
-      { 51,  52,  53,  54,  -1,  -1}, // 05: fünf
-      { 83,  84,  85,  86,  87,  -1}, // 06: sechs
-      { 88,  89,  90,  91,  92,  93}, // 07: sieben
-      { 77,  78,  79,  80,  -1,  -1}, // 08: acht
-      {103, 104, 105, 106,  -1,  -1}, // 09: neun
-      {106, 107, 108, 109,  -1,  -1}, // 10: zehn
-      { 49,  50,  51,  -1,  -1,  -1}, // 11: elf
-      { 94,  95,  96,  97,  98,  -1}  // 12: zwölf and 00: null
+      {                         -1 }, //  0 - 00
+      { FUEF_2, AB_2,           -1 }, //  1 - 05 fünf ab
+      { ZAEH_2, AB_2,           -1 }, //  2 - 10 zehn ab
+      { VIERTU_2, AB_2,         -1 }, //  3 - 15 viertel ab
+      { ZWAENZG_2, AB_2,        -1 }, //  4 - 20 zwanzig ab
+      { FUEF_2, VOR_2, HAUBI_2, -1 }, //  5 - 25 fünf vor halb
+      { HAUBI_2,                -1 }, //  6 - 30 halb
+      { FUEF_2, AB_2,HAUBI_2,   -1 }, //  7 - 35 fünf ab halb
+      { ZWAENZG_2, VOR_2,       -1 }, //  8 - 40 zwanzig vor
+      { VIERTU_2, VOR_2,        -1 }, // 13 - 45 viertel vor
+      { ZAEH_2, VOR_2,          -1 }, // 10 - 50 zehn vor
+      { FUEF_2, VOR_2,          -1 }, // 11 - 55 fünf vor
     };
+    // hour masks
+    // Normal wiring
+    const int maskHours16x16_2[13][maskSizeHours] = 
+    {
+      { 64,  65,  66,  -1,  -1,  -1}, // 01: ein
+      { 64,  65,  66,  -1,  -1,  -1}, // 01: eins
+      { 67,  68,  69,  70,  -1,  -1}, // 02: zwei
+      { 71,  72,  73,  -1,  -1,  -1}, // 03: drei
+      { 81,  82,  83,  84,  85,  -1}, // 04: vier
+      { 86,  87,  88,  89,  -1,  -1}, // 05: fünf
+      { 97,  98,  99, 100, 101, 102}, // 06: sechs
+      {101, 102, 103, 104, 105,  -1}, // 07: sieben
+      {113, 114, 115, 116, 117,  -1}, // 08: acht
+      {118, 119, 120, 121,  -1,  -1}, // 09: neun
+      {128, 129, 130, 131, 132,  -1}, // 10: zehn
+      { 64,  80,  96, 112,  -1,  -1}, // 11: elf
+      { 58,  74,  90, 106, 122, 138}  // 12: zwölf and 00: null
+    };
+    // mask minute dots
+    const int maskMinuteDots2[maskSizeMinuteDots] = {134, 135, 136, 137};
+
+
+    // "minute" masks 
+    //  0- 15  ZWÄNZGFÜ FÜF   =6,7,23    AB =34,50
+    // 16- 31  ÄVIERTUF ZÄH   =0,16,32   VOR=17,33,49 
+    // 32- 47  HOAHAUBI ZWÄNZG=1,2,3,4,5
+    // 48- 63  ZRB ADRÜ VIERTU=17,18,19,20,21,22
+    // 64- 79  WÄSÄCHS+ HAUBI =35,36,37,38,39
+    // 80- 95  ÖVHSHFI1 EIS   =113,98,83
+    // 96-111  UIINTÜB2 ZWÖI  =48,64,80,97
+    //112-127  FEUFIFN3 DRÜ   =53,54,55 
+    //128-143  IRNUNII4 VIER  =81,97,113,129,128
+
+    #define FUEF_3 6,7,23
+    #define ZAEH_3 0,16,32
+    #define VIERTU_3 17,18,19,20,21,22
+    #define ZWAENZG_3 0,1,2,3,4,5
+    #define HAUBI_3 35,36,37,38,39
+    #define AB_3 34,50
+    #define VOR_3 17,33,49
+    const int maskMinutes16x16_3[12][maskSizeMinutes] = 
+    {
+      {                         -1 }, //  0 - 00
+      { FUEF_3, AB_3,           -1 }, //  1 - 05 fünf ab
+      { ZAEH_3, AB_3,           -1 }, //  2 - 10 zehn ab
+      { VIERTU_3, AB_3,         -1 }, //  3 - 15 viertel ab
+      { ZWAENZG_3, AB_3,        -1 }, //  4 - 20 zwanzig ab
+      { FUEF_3, VOR_3, HAUBI_3, -1 }, //  5 - 25 fünf vor halb
+      { HAUBI_3,                -1 }, //  6 - 30 halb
+      { FUEF_3, AB_3,HAUBI_3,   -1 }, //  7 - 35 fünf ab halb
+      { ZWAENZG_3, VOR_3,       -1 }, //  8 - 40 zwanzig vor
+      { VIERTU_3, VOR_3,        -1 }, // 13 - 45 viertel vor
+      { ZAEH_3, VOR_3,          -1 }, // 10 - 50 zehn vor
+      { FUEF_3, VOR_3,          -1 }, // 11 - 55 fünf vor
+    };
+    // hour masks
+    const int maskHours16x16_3[13][maskSizeHours] = 
+    {
+      { 113,98,83,       -1},  // 01: EIS
+      { 113,98,83,       -1},  // 01: EIS
+      { 48,64,80,97,     -1},  // 02: ZWÖI
+      { 53,54,55,         -1}, // 03: DRÜ
+      { 81,97,113,129,128,-1}, // 04: VIERI
+      { 85,101,117,133,   -1}, // 05: FÜFI
+      { 66,67,68,69,70,86},    // 06: SÄCHSI
+      { 70,86,102,118,134,-1}, // 07: SIBNI
+      { 52,68,84,100,116, -1}, // 08: ACHTI
+      {130,131,132,133,   -1}, // 09: NÜNI
+      { 48,65,82,99,116,  -1}, // 10: ZÄHNI
+      {113,114,115,116,   -1}, // 11: EUFI
+      { 48,64,80,96,112,128 }  // 12: ZWÖUFI
+    };
+    // mask minute dots
+    const int maskMinuteDots3[maskSizeMinuteDots] = {87, 103, 119, 135};
 
     // mask "it is"
-    const int maskItIs[maskSizeItIs] = {0, 1, 3, 4, 5};
-
-    // mask minute dots
-    const int maskMinuteDots[maskSizeMinuteDots] = {110, 111, 112, 113};
+    const int maskItIs[maskSizeItIs] = {0, 1, 3, 4, 5, 6};
 
     // overall mask to define which LEDs are on
     int maskLedsOn[maskSizeLeds] = 
     {
-      0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0,0,0,0,0,0,0,0,
-      0,0,0,0
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //  0- 15  
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 16- 31  
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 32- 47  
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 48- 63  
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 64- 79  
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 80- 95  
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  // 96-111  
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //112-127  
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //128-143  
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //144-159  
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //160-175
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //176-191
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //192-207
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //208-223
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //224-239
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0   //240-256
     };
 
     // update led mask
     void updateLedMask(const int wordMask[], int arraySize)
     {
       // loop over array
-      for (int x=0; x < arraySize; x++) 
-      {
+      for (int x=0; x < arraySize; x++) {
+        if (wordMask[x]<0) break;
         // check if mask has a valid LED number
-        if (wordMask[x] >= 0 && wordMask[x] < maskSizeLeds)
-        {
+        if (wordMask[x] >= 0 && wordMask[x] < maskSizeLeds) {
           // turn LED on
           maskLedsOn[wordMask[x]] = 1;
         }
@@ -155,41 +245,47 @@ class WordClockUsermod : public Usermod
       int index = hours;
 
       // handle 00:xx as 12:xx
-      if (hours == 0)
-      {
+      if (hours == 0) {
         index = 12;
       }
 
       // check if we get an overrun of 12 o´clock
-      if (hours == 13)
-      {
+      if (hours == 13) {
         index = 1;
       }
 
       // special handling for "ein Uhr" instead of "eins Uhr"
-      if (hours == 1 && fullClock == true)
-      {
+      if (hours == 1 && fullClock == true) {
         index = 0;
       }
 
       // update led mask
-      if (meander)
-      {
-        updateLedMask(maskHoursMea[index], maskSizeHoursMea);
-      } else {
-      updateLedMask(maskHours[index], maskSizeHours);
+      switch (layout) {
+        case 1:
+          updateLedMask(maskHours16x16_1[index], maskSizeHours);
+          break;
+        case 2:
+          updateLedMask(maskHours16x16_2[index], maskSizeHours);
+          break;
+        case 3:
+          updateLedMask(maskHours16x16_3[index], maskSizeHours);
+          break;
       }
     }
 
     // set minutes
-    void setMinutes(int index)
-    {
+    void setMinutes(int index) {
       // update led mask
-      if (meander)
-      {
-        updateLedMask(maskMinutesMea[index], maskSizeMinutesMea);
-      } else {
-      updateLedMask(maskMinutes[index], maskSizeMinutes);
+      switch (layout) {
+        case 1:
+          updateLedMask(maskMinutes16x16_1[index], maskSizeMinutes);
+          break;
+        case 2:
+          updateLedMask(maskMinutes16x16_2[index], maskSizeMinutes);
+          break;
+        case 3:
+          updateLedMask(maskMinutes16x16_3[index], maskSizeMinutes);
+          break;
       }
     }
 
@@ -200,26 +296,33 @@ class WordClockUsermod : public Usermod
       int minutesDotCount = minutes % 5;
 
       // check if minute dots are active
-      if (minutesDotCount > 0)
-      {
+      if (minutesDotCount > 0) {
         // activate all minute dots until number is reached
-        for (int i = 0; i < minutesDotCount; i++)
-        {
+        for (int i = 0; i < minutesDotCount; i++) {
           // activate LED
-          maskLedsOn[maskMinuteDots[i]] = 1;  
+          switch (layout) {
+            case 1:
+              maskLedsOn[maskMinuteDots1[i]] = 1;  
+              break;
+            case 2:
+              maskLedsOn[maskMinuteDots2[i]] = 1;  
+              break;
+            case 3:
+              maskLedsOn[maskMinuteDots3[i]] = 1;  
+              break;
+          }
         }
       }
     }
 
     // update the display
-    void updateDisplay(uint8_t hours, uint8_t minutes) 
-    {
-      // disable complete matrix at the bigging
-      for (int x = 0; x < maskSizeLeds; x++)
-      {
-        maskLedsOn[x] = 0;
+    void updateDisplay(uint8_t hours, uint8_t minutes) {
+      // disable/enable complete matrix at the bigging
+      for (int x = 0; x < maskSizeLeds; x++) {
+        maskLedsOn[x] = layout==0?1:0;
       } 
-      
+      if (layout==0) return;
+
       // display it is/es ist if activated
       if (displayItIs)
       {
@@ -248,15 +351,9 @@ class WordClockUsermod : public Usermod
             setHours(hours, false);
             break;
         case 3:
-            if (nord) {
-              // viertel nach
-              setMinutes(12);
-              setHours(hours, false);
-            } else {
-              // viertel 
-              setMinutes(3);
-              setHours(hours + 1, false);
-            };
+            // viertel nach
+            setMinutes(3);
+            setHours(hours, false);
             break;
         case 4:
             // 20 nach
@@ -285,13 +382,7 @@ class WordClockUsermod : public Usermod
             break;
         case 9:
             // viertel vor
-            if (nord) {
-              setMinutes(13);
-            } 
-            // dreiviertel
-              else {
-              setMinutes(9);
-            }
+            setMinutes(9);
             setHours(hours + 1, false);
             break;
         case 10:
@@ -337,25 +428,47 @@ class WordClockUsermod : public Usermod
      *    Instead, use a timer check as shown here.
      */
     void loop() {
+      if (test) {
+        // do it every 1 seconds
+        if (millis() - lastTime > 3000) {
+          int minutes = lastTimeMinutes + 4;
+          int hours = lastTimeHours + 1;
+          
+          //check valid time
+          if (minutes>=60) {
+            hours++; 
+            minutes=0;
+          }
+          if (hours>12) {
+            hours = 1;
+          }
 
-      // do it every 5 seconds
-      if (millis() - lastTime > 5000) 
-      {
-        // check the time
-        int minutes = minute(localTime);
+          //show time
+          updateDisplay(hours, minutes);
 
-        // check if we already updated this minute
-        if (lastTimeMinutes != minutes)
-        {
-          // update the display with new time
-          updateDisplay(hourFormat12(localTime), minute(localTime));
-
-          // remember last update time
           lastTimeMinutes = minutes;
+          lastTimeHours = hours;
+          // remember last update
+          lastTime = millis();
         }
+      } else {
+        // do it every 5 seconds
+        if (millis() - lastTime > 5000) {
+          // check the time
+          int minutes = minute(localTime);
 
-        // remember last update
-        lastTime = millis();
+          // check if we already updated this minute
+          if (lastTimeMinutes != minutes) {
+            // update the display with new time
+            updateDisplay(hourFormat12(localTime), minute(localTime));
+
+            // remember last update time
+            lastTimeMinutes = minutes;
+
+          }
+          // remember last update
+          lastTime = millis();
+        }
       }
     }
 
@@ -423,18 +536,19 @@ class WordClockUsermod : public Usermod
      */
     void addToConfig(JsonObject& root)
     {
-      JsonObject top = root.createNestedObject(F("BaernerZytUsermod"));
-      top[F("active")] = usermodActive;
-      top[F("displayItIs")] = displayItIs;
-      top[F("ledOffset")] = ledOffset;
-      top[F("Meander wiring?")] = meander;
-      top[F("Norddeutsch")] = nord;
+      JsonObject top = root.createNestedObject(F("BaernerZyt"));
+      top[F("Active")] = usermodActive;
+      top[F("Display It Is")] = displayItIs;
+      top[F("Led Offset")] = ledOffset;
+      top[F("Layout")] = layout;
+      top[F("Test")] = test;
     }
 
     void appendConfigData()
     {
-      oappend(SET_F("addInfo('WordClockUsermod:ledOffset', 1, 'Number of LEDs before the letters');"));
-      oappend(SET_F("addInfo('WordClockUsermod:Norddeutsch', 1, 'Viertel vor instead of Dreiviertel');"));
+      oappend(SET_F("addInfo('BaernerZyt:Led Offset', 1, 'Number of LEDs before the letters');"));
+      oappend(SET_F("addInfo('BaernerZyt:Layout', 1, '0=16x16 off, 1=11x10, 2=11x9, 3=8x9');"));
+      oappend(SET_F("addInfo('BaernerZyt:Test', 1, 'alle 3sec eine neue Zeit');"));
     }
 
     /*
@@ -457,15 +571,15 @@ class WordClockUsermod : public Usermod
       // default settings values could be set here (or below using the 3-argument getJsonValue()) instead of in the class definition or constructor
       // setting them inside readFromConfig() is slightly more robust, handling the rare but plausible use case of single value being missing after boot (e.g. if the cfg.json was manually edited and a value was removed)
 
-      JsonObject top = root[F("WordClockUsermod")];
+      JsonObject top = root[F("BaernerZyt")];
 
       bool configComplete = !top.isNull();
 
-      configComplete &= getJsonValue(top[F("active")], usermodActive);
-      configComplete &= getJsonValue(top[F("displayItIs")], displayItIs);
-      configComplete &= getJsonValue(top[F("ledOffset")], ledOffset);
-      configComplete &= getJsonValue(top[F("Meander wiring?")], meander);
-      configComplete &= getJsonValue(top[F("Norddeutsch")], nord);
+      configComplete &= getJsonValue(top[F("Active")], usermodActive);
+      configComplete &= getJsonValue(top[F("Display It Is")], displayItIs);
+      configComplete &= getJsonValue(top[F("Led Offset")], ledOffset);
+      configComplete &= getJsonValue(top[F("Layout")], layout);
+      configComplete &= getJsonValue(top[F("Test")], test);
 
       return configComplete;
     }
@@ -499,7 +613,7 @@ class WordClockUsermod : public Usermod
      */
     uint16_t getId()
     {
-      return USERMOD_ID_WORDCLOCK;
+      return USERMOD_ID_BAERNERZYT;
     }
 
    //More methods can be added in the future, this example will then be extended.
