@@ -11,6 +11,9 @@
  */
 //#include "../usermods/EXAMPLE_v2/usermod_v2_example.h"
 
+#define USERMOD_BAERNERZIT `USERMOD_BAERNERZIT`
+
+
 #ifdef USERMOD_BATTERY
   #include "../usermods/Battery/usermod_v2_Battery.h"
 #endif
@@ -139,6 +142,10 @@
 
 #ifdef USERMOD_WORDCLOCK
   #include "../usermods/usermod_v2_word_clock/usermod_v2_word_clock.h"
+#endif
+
+#ifdef USERMOD_BAERNERZYT
+  #include "../usermods/usermod_v2_baerner_zyt/usermod_v2_baerner_zyt.h"
 #endif
 
 #ifdef USERMOD_MY9291
