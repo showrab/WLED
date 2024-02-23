@@ -393,7 +393,7 @@ class BaernerZytUsermod : public Usermod {
         // activate all minute words until number is reached
         for (int i = 0; i < minutesDotCount; i++) {
           // activate LED
-          switch (layout) {
+          switch (minutesDotCount) {
             case 1:
               updateLedMask(mask1MinuteWritten4, 9);  
               break;
