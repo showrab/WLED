@@ -208,9 +208,8 @@
 #include "../usermods/LDR_Dusk_Dawn_v2/usermod_LDR_Dusk_Dawn_v2.h"
 #endif
 
-void registerUsermods()
-{
-/*
+void registerUsermods() {
+  /*
    * Add your usermod class name here
    * || || ||
    * \/ \/ \/
@@ -392,3 +391,4 @@ void registerUsermods()
   usermods.add(new LDR_Dusk_Dawn_v2());
   #endif
 }
+

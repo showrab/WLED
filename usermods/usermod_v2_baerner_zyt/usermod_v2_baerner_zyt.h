@@ -14,8 +14,7 @@
  * diplayItIs: enable/disable display of "Es ist" on the clock.
  */
 
-class BaernerZytUsermod : public Usermod 
-{
+class BaernerZytUsermod : public Usermod {
   private:
     unsigned long lastTime = 0;
     int lastTimeMinutes = -1;
@@ -25,7 +24,8 @@ class BaernerZytUsermod : public Usermod
     // set your config variables to their boot default value (this can also be done in readFromConfig() or a constructor if you prefer)
     bool usermodActive = true;
     bool displayItIs = true;
-    int ledOffset = 0;
+    bool minuteDots = true;
+    bool minuteWritten = false;
     int layout = 1;
     bool test = false;
     
@@ -35,6 +35,9 @@ class BaernerZytUsermod : public Usermod
     #define maskSizeHours       6
     #define maskSizeItIs        6
     #define maskSizeMinuteDots  4
+    //#define SEGMENT             strip._segments[strip.getCurrSegmentId()]
+    #define cols               12
+    #define rows               12
 
     const int maskMinutes16x16_0[12][maskSizeMinutes] = {};
     const int maskHours16x16_0[13][maskSizeHours] = {};
@@ -93,6 +96,8 @@ class BaernerZytUsermod : public Usermod
     };
     // mask minute dots
     const int maskMinuteDots1[maskSizeMinuteDots] = {144, 145, 146, 147};
+    // mask "it is"
+    const int maskItIs1[maskSizeItIs] = {0, 1, 3, 4, 5, 6};
 
     //16x16 matrix wiring (11x9 Schweizerdeutsch)
     //  0- 15  ES ISCH FÜF
@@ -146,7 +151,8 @@ class BaernerZytUsermod : public Usermod
     };
     // mask minute dots
     const int maskMinuteDots2[maskSizeMinuteDots] = {134, 135, 136, 137};
-
+    // mask "it is"
+    const int maskItIs2[maskSizeItIs] = {0, 1, 3, 4, 5, 6};
 
     // "minute" masks 
     //  0- 15  ZWÄNZGFÜ FÜF   =6,7,23    AB =34,50
@@ -200,11 +206,72 @@ class BaernerZytUsermod : public Usermod
     };
     // mask minute dots
     const int maskMinuteDots3[maskSizeMinuteDots] = {87, 103, 119, 135};
-
     // mask "it is"
-    const int maskItIs[maskSizeItIs] = {0, 1, 3, 4, 5, 6};
+    const int maskItIs3[maskSizeItIs] = {0, 1, 3, 4, 5, 6};
 
-    // overall mask to define which LEDs are on
+
+    //12x12 matrix wiring (12x12 Schweizerdeutsch)
+    //  0- 11  °°ES°ISCH°°°
+    // 12- 23  GRAD°SCHO°°°
+    // 24- 35  °GLI°°FASCH°
+    // 36- 47  ZWÄNZG°°FÜF°
+    // 48- 59  °ZÄH°°VIERTU
+    // 60- 71  VOR°AB°HAUBI
+    // 72- 83  FÜFI°°NÜNI°°
+    // 84- 95  EISZWÖI°DRÜ°
+    // 96-107  °°°SÄCHSIBNI
+    //108-119  ACHTI°VIERI°
+    //120-131  °°ZÄNI°°EUFI
+    //132-143  ZWÖUFI°GSI°°
+    #define FUEF_4 44,45,46
+    #define ZAEH_4 49,50,51
+    #define VIERTU_4 54,55,56,57,58,59
+    #define ZWAENZG_4 36,37,38,39,40,41
+    #define HAUBI_4 67,68,69,70,71
+    #define AB_4 64,65
+    #define VOR_4 60,61,62
+    const int maskMinutes16x16_4[12][maskSizeMinutes] = 
+    {
+      {                         -1 }, //  0 - 00
+      { FUEF_4, AB_4,           -1 }, //  1 - 05 fünf ab
+      { ZAEH_4, AB_4,           -1 }, //  2 - 10 zehn ab
+      { VIERTU_4, AB_4,         -1 }, //  3 - 15 viertel ab
+      { ZWAENZG_4, AB_4,        -1 }, //  4 - 20 zwanzig ab
+      { FUEF_4, VOR_4, HAUBI_4, -1 }, //  5 - 25 fünf vor halb
+      { HAUBI_4,                -1 }, //  6 - 30 halb
+      { FUEF_4, AB_4,HAUBI_4,   -1 }, //  7 - 35 fünf ab halb
+      { ZWAENZG_4, VOR_4,       -1 }, //  8 - 40 zwanzig vor
+      { VIERTU_4, VOR_4,        -1 }, // 13 - 45 viertel vor
+      { ZAEH_4, VOR_4,          -1 }, // 10 - 50 zehn vor
+      { FUEF_4, VOR_4,          -1 }, // 11 - 55 fünf vor
+    };
+    // hour masks
+    const int maskHours16x16_4[13][maskSizeHours] = 
+    {
+      { 84,85,86,           -1}, // 01: EIS
+      { 84,85,86,           -1}, // 01: EIS
+      { 87,88,89,90,        -1}, // 02: ZWÖI
+      { 92,93,94,           -1}, // 03: DRÜ
+      { 114,115,116,117,118,-1}, // 04: VIERI
+      { 72,73,74,75,        -1}, // 05: FÜFI
+      { 99,100,101,102,103,104}, // 06: SÄCHSI
+      { 103,104,105,106,107,-1}, // 07: SIBNI
+      { 108,109,110,111,112,-1}, // 08: ACHTI
+      { 78,79,80,81,        -1}, // 09: NÜNI
+      { 122,123,124,125,    -1}, // 10: ZÄHNI
+      { 128,129,130,131,    -1}, // 11: EUFI
+      { 132,133,134,135,136,137} // 12: ZWÖUFI
+    };
+    // mask minute dots
+    const int maskMinuteDots4[maskSizeMinuteDots] = {10, 11, 22, 23};
+    // mask "it is"
+    const int maskItIs4[maskSizeItIs] = {2, 3, 5, 6, 7, 8};
+    const int mask1MinuteWritten4[9] = {12,13,14,15,139,140,141,-1};
+    const int mask2MinuteWritten4[9] = {139,140,141,-1};
+    const int mask3MinuteWritten4[9] = {25,26,27,-1};
+    const int mask4MinuteWritten4[9] = {17,18,19,20,30,31,32,33,34};
+
+    // overall mask to define which LEDs are on max 16x16
     int maskLedsOn[maskSizeLeds] = 
     {
       0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //  0- 15  
@@ -270,6 +337,9 @@ class BaernerZytUsermod : public Usermod
         case 3:
           updateLedMask(maskHours16x16_3[index], maskSizeHours);
           break;
+          case 4:
+          updateLedMask(maskHours16x16_4[index], maskSizeHours);
+          break;
       }
     }
 
@@ -286,6 +356,9 @@ class BaernerZytUsermod : public Usermod
         case 3:
           updateLedMask(maskMinutes16x16_3[index], maskSizeMinutes);
           break;
+        case 4:
+          updateLedMask(maskMinutes16x16_4[index], maskSizeMinutes);
+          break;
       }
     }
 
@@ -296,7 +369,7 @@ class BaernerZytUsermod : public Usermod
       int minutesDotCount = minutes % 5;
 
       // check if minute dots are active
-      if (minutesDotCount > 0) {
+      if (minuteDots && minutesDotCount > 0) {
         // activate all minute dots until number is reached
         for (int i = 0; i < minutesDotCount; i++) {
           // activate LED
@@ -310,6 +383,29 @@ class BaernerZytUsermod : public Usermod
             case 3:
               maskLedsOn[maskMinuteDots3[i]] = 1;  
               break;
+            case 4:
+              maskLedsOn[maskMinuteDots4[i]] = 1;  
+              break;
+          }
+        }
+      }
+      if (minuteWritten && layout==4 && minutesDotCount > 0) {
+        // activate all minute words until number is reached
+        for (int i = 0; i < minutesDotCount; i++) {
+          // activate LED
+          switch (layout) {
+            case 1:
+              updateLedMask(mask1MinuteWritten4, 9);  
+              break;
+            case 2:
+              updateLedMask(mask2MinuteWritten4, 9);  
+              break;
+            case 3:
+              updateLedMask(mask3MinuteWritten4, 9);  
+              break;
+            case 4:
+              updateLedMask(mask4MinuteWritten4, 9);  
+              break;
           }
         }
       }
@@ -318,7 +414,7 @@ class BaernerZytUsermod : public Usermod
     // update the display
     void updateDisplay(uint8_t hours, uint8_t minutes) {
       // disable/enable complete matrix at the bigging
-      for (int x = 0; x < maskSizeLeds; x++) {
+      for (int x = 0; x < cols * rows; x++) {
         maskLedsOn[x] = layout==0?1:0;
       } 
       if (layout==0) return;
@@ -326,9 +422,21 @@ class BaernerZytUsermod : public Usermod
       // display it is/es ist if activated
       if (displayItIs)
       {
-        updateLedMask(maskItIs, maskSizeItIs);
+        switch (layout) {
+          case 1:
+            updateLedMask(maskItIs1, maskSizeItIs);
+            break;
+          case 2:
+            updateLedMask(maskItIs2, maskSizeItIs);
+            break;
+          case 3:
+            updateLedMask(maskItIs3, maskSizeItIs);
+            break;
+          case 4:
+            updateLedMask(maskItIs4, maskSizeItIs);
+            break;                              
+        }
       }
-
       // set single minute dots
       setSingleMinuteDots(minutes);
 
@@ -395,7 +503,7 @@ class BaernerZytUsermod : public Usermod
             setMinutes(11);
             setHours(hours + 1, false);
             break;
-        }
+      }
     }
 
   public:
@@ -405,16 +513,16 @@ class BaernerZytUsermod : public Usermod
      * setup() is called once at boot. WiFi is not yet connected at this point.
      * You can use it to initialize variables, sensors or similar.
      */
-    void setup() 
-    {
+    void setup() {
+      //const uint16_t cols = SEGMENT.virtualWidth();
+      //const uint16_t rows = SEGMENT.virtualHeight();
     }
 
     /*
      * connected() is called every time the WiFi is (re)connected
      * Use it to initialize network interfaces
      */
-    void connected() 
-    {
+    void connected() {
     }
 
     /*
@@ -495,8 +603,7 @@ class BaernerZytUsermod : public Usermod
      * readFromJsonState() can be used to receive data clients send to the /json/state part of the JSON API (state object).
      * Values in the state object may be modified by connected clients
      */
-    void readFromJsonState(JsonObject& root)
-    {
+    void readFromJsonState(JsonObject& root) {
     }
 
     /*
@@ -537,17 +644,17 @@ class BaernerZytUsermod : public Usermod
     void addToConfig(JsonObject& root)
     {
       JsonObject top = root.createNestedObject(F("BaernerZyt"));
-      top[F("Active")] = usermodActive;
-      top[F("Display It Is")] = displayItIs;
-      top[F("Led Offset")] = ledOffset;
+      top[F("Aktiv")] = usermodActive;
+      top[F("Zeige ES ISCH")] = displayItIs;
+      top[F("Minuten-Punkte")] = minuteDots;
+      top[F("Minuten ausgeschrieben")] = minuteWritten;
       top[F("Layout")] = layout;
       top[F("Test")] = test;
     }
 
     void appendConfigData()
     {
-      oappend(SET_F("addInfo('BaernerZyt:Led Offset', 1, 'Number of LEDs before the letters');"));
-      oappend(SET_F("addInfo('BaernerZyt:Layout', 1, '0=16x16 off, 1=11x10, 2=11x9, 3=8x9');"));
+      oappend(SET_F("addInfo('BaernerZyt:Layout', 1, '0=16x16 off, 1=11x10, 2=11x9, 3=8x9, 4=12x12');"));
       oappend(SET_F("addInfo('BaernerZyt:Test', 1, 'alle 3sec eine neue Zeit');"));
     }
 
@@ -575,9 +682,10 @@ class BaernerZytUsermod : public Usermod
 
       bool configComplete = !top.isNull();
 
-      configComplete &= getJsonValue(top[F("Active")], usermodActive);
-      configComplete &= getJsonValue(top[F("Display It Is")], displayItIs);
-      configComplete &= getJsonValue(top[F("Led Offset")], ledOffset);
+      configComplete &= getJsonValue(top[F("Aktiv")], usermodActive);
+      configComplete &= getJsonValue(top[F("Zeige ES ISCH")], displayItIs);
+      configComplete &= getJsonValue(top[F("Minuten-Punkte")], minuteDots);
+      configComplete &= getJsonValue(top[F("Minuten ausgeschrieben")], minuteWritten);
       configComplete &= getJsonValue(top[F("Layout")], layout);
       configComplete &= getJsonValue(top[F("Test")], test);
 
@@ -595,13 +703,13 @@ class BaernerZytUsermod : public Usermod
       if (usermodActive == true)
       {
         // loop over all leds
-        for (int x = 0; x < maskSizeLeds; x++)
+        for (int x = 0; x < cols * rows; x++)
         {
           // check mask
           if (maskLedsOn[x] == 0)
           {
             // set pixel off
-            strip.setPixelColor(x + ledOffset, RGBW32(0,0,0,0));
+            strip.setPixelColor(x, RGBW32(0,0,0,0));
           }
         }
       }
