@@ -1,4 +1,4 @@
-# Word Clock Usermod V2
+# Bärner Zyt (Word Clock) Usermod V2
 
 This usermod drives an 11x10 pixel matrix wordclock with WLED. There are 4 additional dots for the minutes. 
 The visualisation is described by 4 masks with LED numbers (single dots for minutes, minutes, hours and "clock"). The index of the LEDs in the masks always starts at 0, even if the ledOffset is not 0.

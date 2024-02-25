@@ -40,9 +40,9 @@ class BaernerZytUsermod : public Usermod {
     #define maskSizeMinuteWritten 9
     //#define SEGMENT             strip._segments[strip.getCurrSegmentId()]
 
-    //--------------(16x16 leres Layout 0)---------------- 
+    //--------------Layout 0 (16x16 leres Layout 0)---------------- 
 
-    //--------------(11x10 Schweizerdeutsch)----------------
+    //--------------Layout 1 (11x10 Schweizerdeutsch)----------------
     //  0- 10  ES-ISCH-FÜF
     // 11- 21  -ZÄH-VIERTU
     // 22- 32  ZWÄNZG--VOR
@@ -99,16 +99,16 @@ class BaernerZytUsermod : public Usermod {
     // mask "it is"
     const int maskItIs_1[maskSizeItIs] = {0, 1, 3, 4, 5, 6};
 
-    //----------(11x9 Schweizerdeutsch)------------
+    //----------Layout 2 (11x9 Schweizerdeutsch)------------
     //  0- 10  ES-ISCH-FÜF
     // 11- 21  -ZÄH-VIERTU
     // 22- 32  ZWÄNZG-AB--
     // 33- 43  VOR-HALBI-Z
     // 44- 54  EISZWÖIDRÜW
-    // 55- 65  UVIERIFÜFIÖ
-    // 66- 76  FSÄCHSIBNIU
-    // 77- 87  IACHTINÜNIF
-    // 88- 98  ZÄHNI+°°°°I
+    // 55- 65  EVIERIFÜFIÖ
+    // 66- 76  USÄCHSIBNIU
+    // 77- 87  FACHTINÜNIF
+    // 88- 98  IZÄHNI°°°°I
     #define FUEF_2     8,   9,  10
     #define ZAEH_2    12,  13,  14
     #define VIERTU_2  16,  17,  18,  19,  20,  21
@@ -146,8 +146,8 @@ class BaernerZytUsermod : public Usermod {
       { 71,  72,  73,  74,  75,  -1}, // 07: sieben
       { 78,  79,  80,  81,  82,  -1}, // 08: acht
       { 83,  84,  85,  86,  -1,  -1}, // 09: neun
-      { 88,  89,  90,  91,  92,  -1}, // 10: zehn
-      { 44,  55,  66,  77,  -1,  -1}, // 11: elf
+      { 89,  90,  91,  92,  93,  -1}, // 10: zehn
+      { 55,  66,  77,  88,  -1,  -1}, // 11: elf
       { 43,  54,  65,  76,  87,  98}  // 12: zwölf and 00: null
     };
     // mask minute dots
@@ -155,7 +155,7 @@ class BaernerZytUsermod : public Usermod {
     // mask "it is"
     const int maskItIs_2[maskSizeItIs] = {0, 1, 3, 4, 5, 6};
 
-    //----------8x10 Schweizerdeutsch)------------
+    //----------Layout 3 (8x10 Schweizerdeutsch)------------
     //  0-  7  -ES-ISCH
     //  8- 15  ZWÄNZGFÜ
     // 16- 23  ÄVIERTUF
@@ -212,7 +212,7 @@ class BaernerZytUsermod : public Usermod {
     // mask "it is"
     const int maskItIs_3[maskSizeItIs] = {0, 1, 3, 4, 5, 6};
 
-    //----------12x12 Schweizerdeutsch)------------
+    //----------Layout 4 (12x12 Schweizerdeutsch)------------
     //  0- 11  --ES-ISCH---
     // 12- 23  GRAD-SCHO---
     // 24- 35  -GLI--FASCH-
