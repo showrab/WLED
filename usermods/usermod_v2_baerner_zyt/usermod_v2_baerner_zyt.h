@@ -17,6 +17,7 @@
 class BaernerZytUsermod : public Usermod {
   private:
     unsigned long lastTime = 0;
+    unsigned long lastTime_2 = 0;
     int lastTimeMinutes = -1;
     int lastTimeHours = -1;
     bool testStarted = false;
@@ -25,9 +26,10 @@ class BaernerZytUsermod : public Usermod {
     bool usermodActive = true;
     int matrixCols = 16;
     int matrixRows = 16;
+    int offset = 0;
     bool displayItIs = true;
     bool minuteDots = true;
-    bool minuteWritten = false;
+    bool minuteWritten = true;
     int layout = 1;
     bool test = false;
     
@@ -91,7 +93,7 @@ class BaernerZytUsermod : public Usermod {
       { 83,  84,  85,  86,  87,  -1}, // 08: acht
       { 77,  78,  79,  80,       -1}, // 09: neun
       { 88,  89,  90,  91,  92,  -1}, // 10: zehn
-      { 94,  95,  06,  97,       -1}, // 11: elf
+      { 94,  95,  96,  97,       -1}, // 11: elf
       {104, 105, 106, 107, 108, 109}  // 12: zwölf and 00: null
     };
     // mask minute dots
@@ -210,12 +212,12 @@ class BaernerZytUsermod : public Usermod {
     // mask minute dots
     const int maskMinuteDots_3[maskSizeMinuteDots] = {25, 26, 33, 34};
     // mask "it is"
-    const int maskItIs_3[maskSizeItIs] = {0, 1, 3, 4, 5, 6};
+    const int maskItIs_3[maskSizeItIs] = {1, 2, 4, 5, 6, 7};
 
     //----------Layout 4 (12x12 Schweizerdeutsch)------------
     //  0- 11  --ES-ISCH---
-    // 12- 23  GRAD-SCHO---
-    // 24- 35  -GLI--FASCH-
+    // 12- 23  GRAD°SCHO--°
+    // 24- 35  -GLI°-FASCH°
     // 36- 47  ZWÄNZG--FÜF-
     // 48- 59  -ZÄH--VIERTU
     // 60- 71  VOR-AB-HAUBI
@@ -266,7 +268,7 @@ class BaernerZytUsermod : public Usermod {
       { 132,133,134,135,136,137} // 12: ZWÖUFI
     };
     // mask minute dots
-    const int maskMinuteDots_4[maskSizeMinuteDots] = {10, 11, 22, 23};
+    const int maskMinuteDots_4[maskSizeMinuteDots] = {16, 23, 28, 35};
     // mask "it is"
     const int maskItIs_4[maskSizeItIs] = {2, 3, 5, 6, 7, 8};
     const int mask1MinuteWritten_4[maskSizeMinuteWritten] = {12,13,14,15,139,140,141,-1};
@@ -360,15 +362,15 @@ class BaernerZytUsermod : public Usermod {
       for (int x=0; x < arraySize; x++) {
         if (wordMask[x]<0) break;
         // draw words on a bigger matrix
-        int offset = 0;
+        int skip = 0;
         if (matrixCols > layoutCols) {
           int row = wordMask[x] / layoutCols;
-          offset = row * (matrixCols - layoutCols);
+          skip = row * (matrixCols - layoutCols);
         }
         // check if mask has a valid LED number
-        if (wordMask[x] + offset >= 0 && wordMask[x] + offset < maskSizeLeds) {
+        if (offset + wordMask[x] + skip >= 0 && wordMask[x] + skip < maskSizeLeds) {
           // turn LED on
-          maskLedsOn[wordMask[x] + offset] = 1;
+          maskLedsOn[offset + wordMask[x] + skip] = 1;
         }
       }
     }
@@ -516,7 +518,7 @@ class BaernerZytUsermod : public Usermod {
       int minutesDotCount = minutes % 5;
       // set single minute dots
       setSingleMinuteDots(minutesDotCount);
-      if (minutesDotCount > 2 ) {
+      if (minuteWritten && minutesDotCount > 2 ) {
         minutes += 2;
       } 
 
@@ -583,6 +585,11 @@ class BaernerZytUsermod : public Usermod {
             setMinutes(11);
             setHours(hours + 1, false);
             break;
+        case 12:
+            // 5 vor (minutesWritten)
+            setMinutes(0);
+            setHours(hours + 1, false);
+            break;
       }
     }
 
@@ -617,11 +624,16 @@ class BaernerZytUsermod : public Usermod {
      */
     void loop() {
       if (test) {
+        int hours;
+        // do it every 3 seconds
+        if (millis() - lastTime_2 > 3000) {
+          lastTimeHours = lastTimeHours + 1;
+          lastTime_2 = millis();
+        }
         // do it every 1 seconds
-        if (millis() - lastTime > 3000) {
-          int minutes = lastTimeMinutes + 4;
-          int hours = lastTimeHours + 1;
-          
+        if (millis() - lastTime > 1000) {
+          int minutes = lastTimeMinutes + 1;
+          hours = lastTimeHours;
           //check valid time
           if (minutes>=60) {
             hours++; 
@@ -725,6 +737,7 @@ class BaernerZytUsermod : public Usermod {
       top[F("Aktiv")] = usermodActive;
       top[F("LED Matrix Breite")] = matrixCols;
       top[F("LED Matrix Höhe")] =  matrixRows;
+      top[F("Offset")] =  offset;
       top[F("Zeige ES ISCH")] = displayItIs;
       top[F("Minuten-Punkte")] = minuteDots;
       top[F("Minuten ausgeschrieben")] = minuteWritten;
@@ -735,6 +748,7 @@ class BaernerZytUsermod : public Usermod {
     void appendConfigData() {
       oappend(SET_F("addInfo('BaernerZyt:LED Matrix Breite', 1, 'min 1, max 16');"));
       oappend(SET_F("addInfo('BaernerZyt:LED Matrix Höhe', 1, 'min 1, max 16');"));
+      oappend(SET_F("addInfo('BaernerZyt:Offset', 1, 'verschiebe Start');"));
       oappend(SET_F("addInfo('BaernerZyt:Layout', 1, '0=16x16 off, 1=11x10, 2=11x9, 3=8x10, 4=12x12, 5=10x10');"));
       oappend(SET_F("addInfo('BaernerZyt:Test', 1, 'alle 3sec eine neue Zeit');"));
     }
@@ -766,6 +780,7 @@ class BaernerZytUsermod : public Usermod {
       configComplete &= getJsonValue(top[F("Zeige ES ISCH")], displayItIs);
       configComplete &= getJsonValue(top[F("LED Matrix Breite")], matrixCols);
       configComplete &= getJsonValue(top[F("LED Matrix Höhe")],  matrixRows);
+      configComplete &= getJsonValue(top[F("Offset")],  offset);
       configComplete &= getJsonValue(top[F("Minuten-Punkte")], minuteDots);
       configComplete &= getJsonValue(top[F("Minuten ausgeschrieben")], minuteWritten);
       configComplete &= getJsonValue(top[F("Layout")], layout);
