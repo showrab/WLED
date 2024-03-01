@@ -316,22 +316,22 @@ class BaernerZytUsermod : public Usermod {
     
     // mask minute words
     const int maskMinuteWords[MAX_LAYOUTS][5][maskSizeMinuteWords] = {
-      { {} },          //Layout 0
-      { {} },          //Layout 1
-      { {} },          //Layout 2
-      { {},
+      { { -1 } },          //Layout 0
+      { { -1 } },          //Layout 1
+      { { -1 } },          //Layout 2
+      { { -1 },
         {PLUS_1_3},    //Layout 3, minute +1
         {PLUS_2_3},    //Layout 3, minute +2 
         {MINUS_2_3},   //Layout 3, minute -2
         {MINUS_1_3},   //Layout 3, minute -1
       },
-      { {},
+      { { -1 },
         {GRAD_GSI_4},  //Layout 4, minute +1
         {GSI_4},       //Layout 4, minute +2
         {GLI_4},       //Layout 4, minute -2
         {SCHO_FASCH_4},//Layout 4, minute -1
       },                                
-      { {},
+      { { -1 },
         {PLUS_1_5},    //Layout 5, minute +1
         {PLUS_2_5},    //Layout 5, minute +2
         {MINUS_2_5},   //Layout 5, minute -2
