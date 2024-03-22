@@ -1,6 +1,8 @@
 #pragma once
 
 #include "wled.h"
+#include "layouts.h"
+#include "zyt-macros.h"
 
 /*
  * Usermods allow you to add own functionality to WLED more easily
@@ -20,7 +22,6 @@ class BaernerZytUsermod : public Usermod {
     unsigned long lastTime_2 = 0;
     int lastTimeMinutes = -1;
     int lastTimeHours = -1;
-    bool testStarted = false;
 
     // set your config variables to their boot default value (this can also be done in readFromConfig() or a constructor if you prefer)
     bool usermodActive = true;
@@ -33,318 +34,28 @@ class BaernerZytUsermod : public Usermod {
     int layout = 1;
     bool test = false;
     
-    // defines for mask sizes
-    #define maskSizeLeds          16*16
-    #define maskSizeMinutes       12
-    #define maskSizeHours         6
-    #define maskSizeItIs          6
-    #define maskSizeMinuteDots    4
-    #define maskSizeMinuteWords   9
-
-    #define MAX_LAYOUTS           6
-
-
     //#define SEGMENT             strip._segments[strip.getCurrSegmentId()]
 
-    //--------------Layout 0 (16x16 leres Layout 0)---------------- 
-    #define layoutCols_0 16
-    //--------------Layout 1 (11x10 Schweizerdeutsch)----------------
-    //  0- 10  ES-ISCH-FÜF
-    // 11- 21  -ZÄH-VIERTU
-    // 22- 32  ZWÄNZG--VOR
-    // 33- 43  AB----HALBI    
-    // 44- 54  EISDRÜZWÖI-
-    // 55- 65  VIERI--FÜFI 
-    // 66- 76  SÄCHSIBNI--
-    // 77- 87  NÜNI--ACHTI
-    // 88- 98  ZÄHNI-EUFI-
-    // 99-110  1234-ZWÖUFI
-    #define FUEF_1        8,9,10
-    #define ZAEH_1        12,13,14
-    #define VIERTU_1      16,17,18,19,20,21
-    #define ZWAENZG_1     22,23,24,25,26,27
-    #define HAUBI_1       39,40,41,42,43
-    #define AB_1          33,34
-    #define VOR_1         30,31,32
-    #define EIS_1         44,45,46,      -1
-    #define ZWOEI_1       50,51,52,53,   -1
-    #define DRUE_1        47,48,49,      -1
-    #define VIERI_1       55,56,57,58,59,-1
-    #define FUEFI_1       62,63,64,65,   -1
-    #define SAECHSI_1     66,67,68,69,70,71
-    #define SIBNI_1       70,71,72,73,74,-1
-    #define ACHTI_1       83,84,85,86,87,-1
-    #define NUENI_1       77,78,79,80,   -1
-    #define ZAENI_1       88,89,90,91,92,-1
-    #define EUFI_1        94,95,96,97,   -1
-    #define ZWOEUFI_1     104,105,106,107,108,109  
-    #define layoutCols_1  11
-    #define itIs_1        0, 1, 3, 4, 5, 6
-    #define minuteDots_1  99, 100, 101, 102      
+    //define arrays with the zyt-makros
+    const int layoutCols[MAX_LAYOUTS] = { LAYOUT_COLS }; 
+    const int maskItIs[MAX_LAYOUTS][maskSizeItIs] = { IT_IS };
+    const int maskMinutes[MAX_LAYOUTS][12][maskSizeMinutes] = { MINUTES };
+    const int maskHours[MAX_LAYOUTS][13][maskSizeHours] = { HOURS };
+    const int maskMinuteDots[MAX_LAYOUTS][maskSizeMinuteDots] = { MINUTE_DOTS };
+    const int maskMinuteWords[MAX_LAYOUTS][5][maskSizeMinuteWords] = { MINUTE_WORDS };
+    const int nextHour[MAX_LAYOUTS] = { NEXT_HOUR };
 
-    //----------Layout 2 (11x9 Schweizerdeutsch)------------
-    //  0- 10  ES-ISCH-FÜF
-    // 11- 21  -ZÄH-VIERTU
-    // 22- 32  ZWÄNZG-AB--
-    // 33- 43  VOR-HALBI-Z
-    // 44- 54  EISZWÖIDRÜW
-    // 55- 65  EVIERIFÜFIÖ
-    // 66- 76  USÄCHSIBNIU
-    // 77- 87  FACHTINÜNIF
-    // 88- 98  IZÄHNI°°°°I
-    #define FUEF_2        8,   9,  10
-    #define ZAEH_2        12,  13,  14
-    #define VIERTU_2      16,  17,  18,  19,  20,  21
-    #define ZWAENZG_2     22,  23,  24,  25,  26,  27
-    #define HAUBI_2       37,  38,  39,  40,  41
-    #define AB_2          29,  30
-    #define VOR_2         33,  34,  35
-    #define EIS_2         44,  45,  46,  -1,  -1,  -1
-    #define ZWOEI_2       47,  48,  49,  50,  -1,  -1
-    #define DRUE_2        51,  52,  53,  -1,  -1,  -1
-    #define VIERI_2       56,  57,  58,  59,  60,  -1
-    #define FUEFI_2       61,  62,  63,  64,  -1,  -1
-    #define SAECHSI_2     67,  68,  69,  70,  71,  72
-    #define SIBNI_2       71,  72,  73,  74,  75,  -1
-    #define ACHTI_2       78,  79,  80,  81,  82,  -1
-    #define NUENI_2       89,  90,  91,  92,  93,  -1
-    #define ZAENI_2       83,  84,  85,  86,  -1,  -1
-    #define EUFI_2        55,  66,  77,  88,  -1,  -1
-    #define ZWOEUFI_2     43,  54,  65,  76,  87,  98
-    #define layoutCols_2  11
-    #define itIs_2        0, 1, 3, 4, 5, 6
-    #define minuteDots_2  94, 95, 96, 97
+    // overall mask to define which LEDs are ON and with which added collor (max 16x16)
+    uint32_t maskLedsOn[maskSizeLeds] = {};
 
-    //----------Layout 3 (8x10 Schweizerdeutsch)------------
-    //  0-  7  -ES-ISCH
-    //  8- 15  ZWÄNZGFÜ
-    // 16- 23  ÄVIERTUF
-    // 24- 31  H°°ABVOR
-    // 32- 59  Z°°HAUBI
-    // 40- 47  WÄSÄCHSI
-    // 48- 55  ÖVHSHFID
-    // 56- 63  UIINTÜBR
-    // 64- 71  FEUFIFNÜ
-    // 72- 79  IRINÜNI-
-    #define PLUS_1_3      25,-1
-    #define PLUS_2_3      25,33,-1
-    #define MINUS_2_3     33,34,-1
-    #define MINUS_1_3     34,-1
-    #define FUEF_3        14,15,23
-    #define ZAEH_3        8,16,24
-    #define VIERTU_3      17,18,19,20,21,22
-    #define ZWAENZG_3     8,9,10,11,12,13
-    #define HAUBI_3       35,36,37,38,39
-    #define AB_3          27,28
-    #define VOR_3         29,30,31
-    #define EIS_3         65,58,51,      -1
-    #define ZWOEI_3       32,40,48,57,   -1
-    #define DRUE_3        55,63,71,      -1
-    #define VIERI_3       49,57,65,73,74,-1
-    #define FUEFI_3       53,61,69,78,   -1
-    #define SAECHSI_3     42,43,44,45,46,47
-    #define SIBNI_3       46,54,62,70,78,-1
-    #define ACHTI_3       36,44,52,60,68,-1
-    #define NUENI_3       75,76,77,78,   -1
-    #define ZAENI_3       32,41,50,59,68,-1
-    #define EUFI_3        65,66,67,68,   -1
-    #define ZWOEUFI_3     32,40,48,56,64,72
-    #define layoutCols_3  8
-    #define itIs_3        1, 2, 4, 5, 6, 7
-    #define minuteDots_3  25, 26, 33, 34
-
-    //----------Layout 4 (12x12 Schweizerdeutsch)------------
-    //  0- 11  --ES-ISCH---
-    // 12- 23  GRAD°SCHO--°
-    // 24- 35  -GLI°-FASCH°
-    // 36- 47  ZWÄNZG--FÜF-
-    // 48- 59  -ZÄH--VIERTU
-    // 60- 71  VOR-AB-HAUBI
-    // 72- 83  FÜFI--NÜNI--
-    // 84- 95  EISZWÖI-DRÜ-
-    // 96-107  ---SÄCHSIBNI
-    //108-119  ACHTI-VIERI-
-    //120-131  --ZÄNI--EUFI
-    //132-143  ZWÖUFI-GSI--
-    #define GRAD_GSI_4    12,13,14,15,139,140,141,-1
-    #define GSI_4         139,140,141,-1
-    #define GLI_4         25,26,27,-1
-    #define SCHO_FASCH_4  17,18,19,20,30,31,32,33,34
-    #define FUEF_4        44,45,46
-    #define ZAEH_4        49,50,51
-    #define VIERTU_4      54,55,56,57,58,59
-    #define ZWAENZG_4     36,37,38,39,40,41
-    #define HAUBI_4       67,68,69,70,71
-    #define AB_4          64,65
-    #define VOR_4         60,61,62
-    #define EIS_4         84,85,86,           -1
-    #define ZWOEI_4       87,88,89,90,        -1
-    #define DRUE_4        92,93,94,           -1
-    #define VIERI_4       114,115,116,117,118,-1
-    #define FUEFI_4       72,73,74,75,        -1
-    #define SAECHSI_4     99,100,101,102,103,104
-    #define SIBNI_4       103,104,105,106,107,-1
-    #define ACHTI_4       108,109,110,111,112,-1
-    #define NUENI_4       78,79,80,81,        -1
-    #define ZAENI_4       122,123,124,125,    -1
-    #define EUFI_4        128,129,130,131,    -1
-    #define ZWOEUFI_4     132,133,134,135,136,137
-    #define layoutCols_4  12
-    #define itIs_4        2, 3, 5, 6, 7, 8
-    #define minuteDots_4  16, 23, 28, 35
-
-    //----------Layout 4 (10x10 Schweizerdeutsch)------------
-    //  0-  9  S'ISCH-FÜF
-    // 10- 19  ZÄH-VIERTU
-    // 20- 29  ZWÄNZG AB-
-    // 30- 39  VOR-HAUBI°
-    // 40- 49  ZWÖUFIEIS°
-    // 50- 59  EUFI-ZWÖI°
-    // 60- 69  ZÄHNI-DRÜ°
-    // 70- 79  NÜNIVIERI-
-    // 80- 89  ACHTI-FÜFI
-    // 90- 99  SÄCHSIBNI-
-    #define PLUS_1_5      39,-1
-    #define PLUS_2_5      39,49,-1
-    #define MINUS_2_5     59,69,-1
-    #define MINUS_1_5     69,-1
-    #define FUEF_5        7,8,9
-    #define ZAEH_5        10,11,12
-    #define VIERTU_5      14,15,16,17,18,19
-    #define ZWAENZG_5     20,21,22,23,24,25
-    #define HAUBI_5       34,35,36,37,38
-    #define AB_5          27,28
-    #define VOR_5         30,31,32
-    #define EIS_5         46,47,48,      -1
-    #define ZWOEI_5       55,56,57,58,   -1
-    #define DRUE_5        66,67,68,      -1
-    #define VIERI_5       74,75,76,77,78,-1
-    #define FUEFI_5       86,87,88,89,   -1
-    #define SAECHSI_5     90,91,92,93,94,95
-    #define SIBNI_5       94,95,96,97,98,-1
-    #define ACHTI_5       80,81,82,83,84,-1
-    #define NUENI_5       70,71,72,73,   -1
-    #define ZAENI_5       60,61,62,63,64,-1
-    #define EUFI_5        50,51,52,53,   -1
-    #define ZWOEUFI_5     40,41,42,43,44,45
-    #define layoutCols_5  10
-    #define itIs_5        0, 1, 2, 3, 4, 5
-    #define minuteDots_5  39, 49, 59, 69
-
-    //----------insert new layout here------------
-
-    //-------some makros magic----------
-    #define fivePast(i)   FUEF_##i,AB_##i
-    #define tenPast(i)    ZAEH_##i,AB_##i
-    #define quaterPast(i) VIERTU_##i,AB_##i
-    #define twentyPast(i) ZWAENZG_##i,AB_##i
-    #define half(i)       HAUBI_##i
-    #define twentyTo(i)   ZWAENZG_##i,VOR_##i
-    #define quaterTo(i)   VIERTU_##i,VOR_##i
-    #define tenTo(i)      ZAEH_##i,VOR_##i
-    #define fiveTo(i)     FUEF_##i,VOR_##i
-    #define one(i)        EIS_##i
-    #define two(i)        ZWOEI_##i
-    #define tree(i)       DRUE_##i
-    #define four(i)       VIERI_##i
-    #define five(i)       FUEFI_##i
-    #define six(i)        SAECHSI_##i
-    #define seven(i)      SIBNI_##i
-    #define eight(i)      ACHTI_##i
-    #define nine(i)       NUENI_##i
-    #define ten(i)        ZAENI_##i
-    #define eleven(i)     EUFI_##i
-    #define twelfe(i)     ZWOEUFI_##i
-    #define minutesArray(i) {-1},{fivePast(i),-1},{tenPast(i),-1},{quaterPast(i),-1},{twentyPast(i),-1},{fiveTo(i),half(i),-1},{half(i),-1},{fivePast(i),half(i),-1},{twentyTo(i),-1},{quaterTo(i),-1},{tenTo(i),-1},{fiveTo(i),-1}
-    #define hourArray(i)    {one(i)},{one(i)},{two(i)},{tree(i)},{four(i)},{five(i)},{six(i)},{seven(i)},{eight(i)},{nine(i)},{ten(i)},{eleven(i)},{twelfe(i)} 
-    
-    // Layout with
-    const int layoutCols[MAX_LAYOUTS] = {
-      layoutCols_0, //Layout 0
-      layoutCols_1, //Layout 1
-      layoutCols_2, //Layout 2
-      layoutCols_3, //Layout 3
-      layoutCols_4, //Layout 4
-      layoutCols_5, //Layout 5
-      //insert new layout here
-    }; 
-
-    // mask "it is"
-    const int maskItIs[MAX_LAYOUTS][maskSizeItIs] = {
-      {},       //Layout 0
-      {itIs_1}, //Layout 1
-      {itIs_2}, //Layout 2
-      {itIs_3}, //Layout 3
-      {itIs_4}, //Layout 4
-      {itIs_5}, //Layout 5
-      //insert new layout here
-    };
-
-    // minute mask
-    const int maskMinutes[MAX_LAYOUTS][12][maskSizeMinutes] = 
-    {
-      {},                //Layout 0
-      {minutesArray(1)}, //Layout 1
-      {minutesArray(2)}, //Layout 2
-      {minutesArray(3)}, //Layout 3
-      {minutesArray(4)}, //Layout 4
-      {minutesArray(5)}, //Layout 5
-      //insert new layout here
-    };
-    // hour masks
-    const int maskHours[MAX_LAYOUTS][13][maskSizeHours] = 
-    {
-      {},             //Layout 0
-      {hourArray(1)}, //Layout 1
-      {hourArray(2)}, //Layout 2
-      {hourArray(3)}, //Layout 3
-      {hourArray(4)}, //Layout 4
-      {hourArray(5)}, //Layout 5
-      //insert new layout here
-    };
-    
-    // mask minute dots
-    const int maskMinuteDots[MAX_LAYOUTS][maskSizeMinuteDots] = {
-      {},             //Layout 0
-      {minuteDots_1}, //Layout 1
-      {minuteDots_2}, //Layout 2
-      {minuteDots_3}, //Layout 3
-      {minuteDots_4}, //Layout 4
-      {minuteDots_5}, //Layout 5
-      //insert new layout here
-    };
-    
-    // mask minute words
-    const int maskMinuteWords[MAX_LAYOUTS][5][maskSizeMinuteWords] = {
-      { { -1 } },          //Layout 0
-      { { -1 } },          //Layout 1
-      { { -1 } },          //Layout 2
-      { { -1 },
-        {PLUS_1_3},    //Layout 3, minute +1
-        {PLUS_2_3},    //Layout 3, minute +2 
-        {MINUS_2_3},   //Layout 3, minute -2
-        {MINUS_1_3},   //Layout 3, minute -1
-      },
-      { { -1 },
-        {GRAD_GSI_4},  //Layout 4, minute +1
-        {GSI_4},       //Layout 4, minute +2
-        {GLI_4},       //Layout 4, minute -2
-        {SCHO_FASCH_4},//Layout 4, minute -1
-      },                                
-      { { -1 },
-        {PLUS_1_5},    //Layout 5, minute +1
-        {PLUS_2_5},    //Layout 5, minute +2
-        {MINUS_2_5},   //Layout 5, minute -2
-        {MINUS_1_5},   //Layout 5, minute 11
-      },
-      //insert new layout here
-    };
-
-    // overall mask to define which LEDs are on max 16x16
-    int maskLedsOn[maskSizeLeds] = {};
+    //Colors to add to the effect
+    uint32_t hourColor[MAX_LAYOUTS] = {HOUR_COLOR};
+    uint32_t minuteColor[MAX_LAYOUTS] = {MINUTE_COLOR};
+    uint32_t minuteDotsColor = RGBW32(128,0,255,0);
+    uint32_t itIsColor = 1;
 
     // update led mask
-    void updateLedMask(const int wordMask[], int arraySize, int layoutCols) {
+    void updateLedMask(const int wordMask[], int arraySize, int layoutCols, uint32_t color) {
       // loop over array
       for (int x=0; x < arraySize; x++) {
         if (wordMask[x]<0) break;
@@ -357,7 +68,7 @@ class BaernerZytUsermod : public Usermod {
         // check if mask has a valid LED number
         if (offset + wordMask[x] + skip >= 0 && wordMask[x] + skip < maskSizeLeds) {
           // turn LED on
-          maskLedsOn[offset + wordMask[x] + skip] = 1;
+          maskLedsOn[offset + wordMask[x] + skip] = color;
         }
       }
     }
@@ -383,13 +94,13 @@ class BaernerZytUsermod : public Usermod {
       }
 
       // update led mask
-      updateLedMask(maskHours[layout][index], maskSizeHours, layoutCols[layout]);
+      updateLedMask(maskHours[layout][index], maskSizeHours, layoutCols[layout], hourColor[layout]);
     }
 
     // set minutes
     void setMinutes(int index) {
       // update led mask
-      updateLedMask(maskMinutes[layout][index], maskSizeMinutes, layoutCols[layout]);
+      updateLedMask(maskMinutes[layout][index], maskSizeMinutes, layoutCols[layout], minuteColor[layout]);
     }
 
     // set minutes dot
@@ -400,12 +111,12 @@ class BaernerZytUsermod : public Usermod {
         // activate all minute dots until number is reached
         for (int i = 0; i < minutesDotCount; i++) {
           // activate LED
-          updateLedMask(maskMinuteDots[layout], i+1, layoutCols[layout]);      
+          updateLedMask(maskMinuteDots[layout], i+1, layoutCols[layout], minuteDotsColor);      
         }
       }
       if (minuteWords) {
-        // activate LED
-        updateLedMask(maskMinuteWords[layout][minutesDotCount], maskSizeMinuteWords, layoutCols[layout]);         
+        // activate LED (gli/fasch,...)
+        updateLedMask(maskMinuteWords[layout][minutesDotCount], maskSizeMinuteWords, layoutCols[layout], minuteColor[layout]);         
       }
     }
 
@@ -413,13 +124,13 @@ class BaernerZytUsermod : public Usermod {
     void updateDisplay(uint8_t hours, uint8_t minutes) {
       // disable/enable complete matrix at the bigging
       for (int x = 0; x < matrixCols *  matrixRows; x++) {
-        maskLedsOn[x] = layout==0?1:0;
+        maskLedsOn[x] = layout==0?RGBW32(255,255,255,255):0;
       } 
       if (layout==0) return;
 
-      // display it is/es ist if activated
+      // display "it is" if activated
       if (displayItIs) {
-        updateLedMask(maskItIs[layout], maskSizeItIs, layoutCols[layout]);
+        updateLedMask(maskItIs[layout], maskSizeItIs, layoutCols[layout], itIsColor);
       }
 
       // modulo to get minute dots
@@ -428,10 +139,11 @@ class BaernerZytUsermod : public Usermod {
       // set single minute dots
       setSingleMinuteDots(minutesDotCount);
 
-      // if minute words add 2 minutes when 2 min before next 5 Minute Sector (gli/fasch)
+      // if minute words add 2 minutes when 2 min before next 5 Minute Sector
       if (minuteWords && minutesDotCount > 2 ) {
         minutes += 2;
       } 
+      int nh = nextHour[layout]; //when minutes >=30 say next hour 7:30 -> halb acht 
 
       // switch minutes
       switch (minutes / 5) 
@@ -464,42 +176,42 @@ class BaernerZytUsermod : public Usermod {
         case 5:
             // 5 vor halb
             setMinutes(5);
-            setHours(hours + 1, false);
+            setHours(hours + nh, false);
             break;
         case 6:
             // halb
             setMinutes(6);
-            setHours(hours + 1, false);
+            setHours(hours + nh, false);
             break;
         case 7:
             // 5 nach halb
             setMinutes(7);
-            setHours(hours + 1, false);
+            setHours(hours + nh, false);
             break;
         case 8:
             // 20 vor
             setMinutes(8);
-            setHours(hours + 1, false);
+            setHours(hours + nh, false);
             break;
         case 9:
             // viertel vor
             setMinutes(9);
-            setHours(hours + 1, false);
+            setHours(hours + nh, false);
             break;
         case 10:
             // 10 vor
             setMinutes(10);
-            setHours(hours + 1, false);
+            setHours(hours + nh, false);
             break;
         case 11:
             // 5 vor
             setMinutes(11);
-            setHours(hours + 1, false);
+            setHours(hours + nh, false);
             break;
         case 12:
             // 5 vor (minutesWords)
             setMinutes(0);
-            setHours(hours + 1, false);
+            setHours(hours + nh, false);
             break;
       }
     }
@@ -534,6 +246,7 @@ class BaernerZytUsermod : public Usermod {
      *    Instead, use a timer check as shown here.
      */
     void loop() {
+      //Test the Layout with fast changing numbers
       if (test) {
         int hours;
         // do it every 3 seconds
@@ -562,7 +275,7 @@ class BaernerZytUsermod : public Usermod {
           // remember last update
           lastTime = millis();
         }
-      } else {
+      } else {  //Real Time 
         // do it every 5 seconds
         if (millis() - lastTime > 5000) {
           // check the time
@@ -647,7 +360,6 @@ class BaernerZytUsermod : public Usermod {
       JsonObject top = root.createNestedObject(F("BaernerZyt"));
       top[F("Aktiv")] = usermodActive;
       top[F("LED Matrix Breite")] = matrixCols;
-      top[F("LED Matrix Höhe")] =  matrixRows;
       top[F("Offset")] =  offset;
       top[F("Zeige ES ISCH")] = displayItIs;
       top[F("Minuten-Punkte")] = minuteDots;
@@ -660,7 +372,7 @@ class BaernerZytUsermod : public Usermod {
       oappend(SET_F("addInfo('BaernerZyt:LED Matrix Breite', 1, 'min 1, max 16');"));
       oappend(SET_F("addInfo('BaernerZyt:LED Matrix Höhe', 1, 'min 1, max 16');"));
       oappend(SET_F("addInfo('BaernerZyt:Offset', 1, 'verschiebe Start');"));
-      oappend(SET_F("addInfo('BaernerZyt:Layout', 1, '0=16x16 off, 1=11x10, 2=11x9, 3=8x10, 4=12x12, 5=10x10');"));
+      oappend(SET_F("addInfo('BaernerZyt:Layout', 1, '0=16x16 off, 1=Melissa(11x10), 2=Chlie(11x9), 3=chliner(8x10), 4=Martin(12x12), 5=Andre(10x10), 6==Thomas(11x11), 7/8=Analog(10x10)');"));
       oappend(SET_F("addInfo('BaernerZyt:Test', 1, 'alle 3sec eine neue Zeit');"));
     }
 
@@ -690,7 +402,6 @@ class BaernerZytUsermod : public Usermod {
       configComplete &= getJsonValue(top[F("Aktiv")], usermodActive);
       configComplete &= getJsonValue(top[F("Zeige ES ISCH")], displayItIs);
       configComplete &= getJsonValue(top[F("LED Matrix Breite")], matrixCols);
-      configComplete &= getJsonValue(top[F("LED Matrix Höhe")],  matrixRows);
       configComplete &= getJsonValue(top[F("Offset")],  offset);
       configComplete &= getJsonValue(top[F("Minuten-Punkte")], minuteDots);
       configComplete &= getJsonValue(top[F("Minuten ausgeschrieben")], minuteWords);
@@ -698,6 +409,15 @@ class BaernerZytUsermod : public Usermod {
       configComplete &= getJsonValue(top[F("Test")], test);
 
       return configComplete;
+    }
+
+    static inline uint32_t qadd32(uint32_t c1, uint32_t c2) {
+      return RGBW32(
+          qadd8(R(c1), R(c2)),
+          qadd8(G(c1), G(c2)),
+          qadd8(B(c1), B(c2)),
+          qadd8(W(c1), W(c2))
+      );
     }
 
     /*
@@ -711,9 +431,18 @@ class BaernerZytUsermod : public Usermod {
         // loop over all leds
         for (int x = 0; x < matrixCols * matrixRows; x++) {
           // check mask
-          if (maskLedsOn[x] == 0) {
+          if (maskLedsOn[x] == 0) {   // 0 means don't show his pixel
             // set pixel off
             strip.setPixelColor(x, RGBW32(0,0,0,0));
+          } else {
+            if (minuteColor[layout] != 1){  // 1 means add color to effect
+              uint32_t oldC = strip.getPixelColor(x);
+              strip.setPixelColor(x, qadd32(oldC, maskLedsOn[x]));
+            }
+            // if (minuteColor[layout] != 2){  // 2 means set color
+            //   strip.setPixelColor(x, maskLedsOn[x]);
+            // }
+            //else show pixel with unchanged effect
           }
         }
       }

@@ -3,6 +3,7 @@
  * Register your v2 usermods here!
  *   (for v1 usermods using just usermod.cpp, you can ignore this file)
  */
+#define USERMOD_BAERNERZYT
 
 /*
  * Add/uncomment your usermod filename here (and once more below)
@@ -10,9 +11,6 @@
  * \/ \/ \/
  */
 //#include "../usermods/EXAMPLE_v2/usermod_v2_example.h"
-
-#define USERMOD_BAERNERZYT `USERMOD_BAERNERZYT`
-
 
 #ifdef USERMOD_BATTERY
   #include "../usermods/Battery/usermod_v2_Battery.h"

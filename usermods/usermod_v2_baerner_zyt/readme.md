@@ -1,39 +1,37 @@
 # Bärner Zyt (Word Clock) Usermod V2
 
-This usermod drives an 11x10 pixel matrix wordclock with WLED. There are 4 additional dots for the minutes. 
-The visualisation is described by 4 masks with LED numbers (single dots for minutes, minutes, hours and "clock"). The index of the LEDs in the masks always starts at 0, even if the ledOffset is not 0.
-There are 3 parameters that control behavior:
+This usermod drives an max 16x16 pixel matrix wordclock with WLED. There are 4 additional dots for the minutes. 
+The visualisation is described by 4 masks with LED numbers (single dots for minutes, minutes, hours). The index of the LEDs in the masks always starts at 0, even if the ledOffset is not 0.
+There are parameters that control behavior:
  
 active: enable/disable usermod
-diplayItIs: enable/disable display of "Es ist" on the clock
+matrixCols: width of the matrix (this alows to show a small layout on a larger matrix)
 ledOffset: number of LEDs before the wordclock LEDs
-
-### Update for alternative wiring pattern
-Based on this fantastic work I added an alternative wiring pattern.
-The original used a long wire to connect DO to DI, from one line to the next line.
-
-I wired my clock in meander style. So the first LED in the second line is on the right.
-With this method, every other line was inverted and showed the wrong letter.
-
-I added a switch in usermod called "meander wiring?" to enable/disable the alternate wiring pattern.
+diplayItIs: enable/disable display of "Es ist" on the clock
+minuteDots: show up to 4 dots to see exact minutes between the five minutes
+minuteWords: say the minutes between the five minutes in words (scho fasch füf ab drü)
+layout: Number of the layout
+test: Test mode to tesst the layouts with fast changing numbers
 
 
-## Installation
+## Layouts
 
-Copy and update the example `platformio_override.ini.sample` 
-from the Rotary Encoder UI usermod folder to the root directory of your particular build.
-This file should be placed in the same directory as `platformio.ini`.
+in the file layouts.h there are already defined some layouts
+To define a new layout increment MAX_LAYOUTS by one, copy a already defined layout and coppy everything to the end. Change on all #defines the layout number (#define LAYOUT_COLS_1 -> #define LAYOUT_COLS_8)
 
-### Define Your Options
+In File zyt-macros.h add new line every where you find a //insert new layout here
 
-* `USERMOD_WORDCLOCK`   - define this to have this usermod included wled00\usermods_list.cpp
+To end the words on a array add -1 
+### Installation
+
+* `USERMOD_BAERNERZYT`   - define this to have this usermod included wled00\usermods_list.cpp
+* `USERMOD_ID_BAERNERZYT - define this to have this usermod included wled00\const.h
 
 ### PlatformIO requirements
 
-No special requirements.
+WLAN and NTP
+
 
 ## Change Log
-
-2022/08/18 added meander wiring pattern.
 
 2022/03/30 initial commit
