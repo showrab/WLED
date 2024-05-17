@@ -206,7 +206,7 @@
 
     //----------Layout 5 Andre (10x10 Schweizerdeutsch)------------
     //  0-  9  S'ISCH-FÜF
-    // 10- 19  ZÄH-VIERTU
+    // 10- 19  VIERTU-ZÄH
     // 20- 29  ZWÄNZG AB-
     // 30- 39  VOR-HAUBI°
     // 40- 49  ZWÖUFIEIS°
@@ -226,8 +226,8 @@
     #define MINUTE_COLOR_5 1
     #define ZERO_5        -1
     #define FUEF_5        7,8,9
-    #define ZAEH_5        10,11,12
-    #define VIERTU_5      14,15,16,17,18,19
+    #define ZAEH_5        17,18,19
+    #define VIERTU_5      10,11,12,13,14,15
     #define ZWAENZG_5     20,21,22,23,24,25
     #define HAUBI_5       34,35,36,37,38
     #define AB_5          27,28
