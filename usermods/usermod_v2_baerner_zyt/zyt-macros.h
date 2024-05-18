@@ -4,7 +4,10 @@
     #define MINUS_2(i)      MINUS_2_##i
     #define MINUS_1(i)      MINUS_1_##i
     #define NEXT_HOUR(i)    NEXT_HOUR_##i
-    #define ZERO(i)         ZERO_##i
+    //Minutes
+    #define ZERO_MIN(i)     ZERO_MIN_##i
+    #define MIDDAY_MIN(i)   MIDDAY_MIN_##i
+    #define MIDNIGHT_MIN(i) MIDNIGHT_MIN_##i
     #define FIVE_PAST(i)    FUEF_##i,AB_##i
     #define TEN_PAST(i)     ZAEH_##i,AB_##i
     #define FIFTEEN(i)      VIERTU_##i,AB_##i
@@ -16,7 +19,8 @@
     #define FOURTY_FIVE(i)  FOURTY_FIVE_##i
     #define FIFTY(i)        FIFTY_##i
     #define FIFTY_FIVE(i)   FIFTY_FIVE_##i
-
+    //hours
+    #define ZERO(i)         ZERO_##i
     #define ONE(i)          EIS_##i
     #define TWO(i)          ZWOEI_##i
     #define THREE(i)        DRUE_##i
@@ -30,8 +34,8 @@
     #define ELEVEN(i)       EUFI_##i
     #define TWELFE(i)       ZWOEUFI_##i
 
-    #define MINUTES_ARRAY(i)      {ZERO(i),-1},{FIVE_PAST(i),-1},{TEN_PAST(i),-1},{FIFTEEN(i),-1},{TWENTY(i),-1},{TWENTY_FIVE(i),-1},{THIRTY(i),-1},{THIRTY_FIVE(i),-1},{FOURTY(i),-1},{FOURTY_FIVE(i),-1},{FIFTY(i),-1},{FIFTY_FIVE(i),-1}
-    #define HOURS_ARRAY(i)        {ONE(i)},{ONE(i)},{TWO(i)},{THREE(i)},{FOUR(i)},{FIVE(i)},{SIX(i)},{SEVEN(i)},{EIGHT(i)},{NINE(i)},{TEN(i)},{ELEVEN(i)},{TWELFE(i)}
+    #define MINUTES_ARRAY(i)      {ZERO_MIN(i),-1},{FIVE_PAST(i),-1},{TEN_PAST(i),-1},{FIFTEEN(i),-1},{TWENTY(i),-1},{TWENTY_FIVE(i),-1},{THIRTY(i),-1},{THIRTY_FIVE(i),-1},{FOURTY(i),-1},{FOURTY_FIVE(i),-1},{FIFTY(i),-1},{FIFTY_FIVE(i),-1},{MIDDAY_MIN(i), -1},{MIDNIGHT_MIN(i), -1}
+    #define HOURS_ARRAY(i)        {ZERO(i)},{ONE(i)},{TWO(i)},{THREE(i)},{FOUR(i)},{FIVE(i)},{SIX(i)},{SEVEN(i)},{EIGHT(i)},{NINE(i)},{TEN(i)},{ELEVEN(i)},{TWELFE(i)}
     #define MINUTE_WORDS_ARRAY(i) {-1},{PLUS_1(i)},{PLUS_2(i)},{MINUS_2(i)},{MINUS_1(i)}
 
     #define LAYOUT_COLS   LAYOUT_COLS_0,\

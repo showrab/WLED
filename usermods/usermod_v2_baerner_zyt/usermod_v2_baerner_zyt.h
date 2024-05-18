@@ -20,8 +20,10 @@ class BaernerZytUsermod : public Usermod {
   private:
     unsigned long lastTime = 0;
     unsigned long lastTime_2 = 0;
-    int lastTimeMinutes = -1;
-    int lastTimeHours = -1;
+    int minUp = 0;
+    int hourUp = 0;
+    int lastTimeMinutes = 0;
+    int lastTimeHours = 0;
 
     // set your config variables to their boot default value (this can also be done in readFromConfig() or a constructor if you prefer)
     bool usermodActive = true;
@@ -39,7 +41,7 @@ class BaernerZytUsermod : public Usermod {
     //define arrays with the zyt-makros
     const int layoutCols[MAX_LAYOUTS] = { LAYOUT_COLS }; 
     const int maskItIs[MAX_LAYOUTS][maskSizeItIs] = { IT_IS };
-    const int maskMinutes[MAX_LAYOUTS][12][maskSizeMinutes] = { MINUTES };
+    const int maskMinutes[MAX_LAYOUTS][14][maskSizeMinutes] = { MINUTES };
     const int maskHours[MAX_LAYOUTS][13][maskSizeHours] = { HOURS };
     const int maskMinuteDots[MAX_LAYOUTS][maskSizeMinuteDots] = { MINUTE_DOTS };
     const int maskMinuteWords[MAX_LAYOUTS][5][maskSizeMinuteWords] = { MINUTE_WORDS };
@@ -77,22 +79,12 @@ class BaernerZytUsermod : public Usermod {
     void setHours(int hours, bool fullClock)
     {
       int index = hours;
-
-      // handle 00:xx as 12:xx
-      if (hours == 0) {
-        index = 12;
-      }
-
-      // check if we get an overrun of 12 o´clock
-      if (hours == 13) {
-        index = 1;
-      }
+      if (hours >= 13) index = hours - 12;
 
       // special handling for "ein Uhr" instead of "eins Uhr"
-      if (hours == 1 && fullClock == true) {
-        index = 0;
-      }
-
+      // if (hours == 1 && fullClock == true) {
+      //   index = 0;
+      // }
       // update led mask
       updateLedMask(maskHours[layout][index], maskSizeHours, layoutCols[layout], hourColor[layout]);
     }
@@ -143,14 +135,18 @@ class BaernerZytUsermod : public Usermod {
       if (minuteWords && minutesDotCount > 2 ) {
         minutes += 2;
       } 
-      int nh = nextHour[layout]; //when minutes >=30 say next hour 7:30 -> halb acht 
+      int nh = nextHour[layout]; //when minutes >=25 say next hour 7:25 -> fünf vor halb acht 
+      
+      int fullHourIndex = 0;
+      if (hours == 0) {fullHourIndex = 13;} 
+      if (hours == 12) {fullHourIndex = 12;}
 
       // switch minutes
       switch (minutes / 5) 
       {
         case 0:
             // full hour
-            setMinutes(0);
+            setMinutes(fullHourIndex);
             setHours(hours, true);
             break;
         case 1:
@@ -208,11 +204,6 @@ class BaernerZytUsermod : public Usermod {
             setMinutes(11);
             setHours(hours + nh, false);
             break;
-        case 12:
-            // 5 vor (minutesWords)
-            setMinutes(0);
-            setHours(hours + nh, false);
-            break;
       }
     }
 
@@ -248,32 +239,20 @@ class BaernerZytUsermod : public Usermod {
     void loop() {
       //Test the Layout with fast changing numbers
       if (test) {
-        int hours;
-        // do it every 3 seconds
-        if (millis() - lastTime_2 > 3000) {
-          lastTimeHours = lastTimeHours + 1;
-          lastTime_2 = millis();
-        }
-        // do it every 1 seconds
-        if (millis() - lastTime > 1000) {
-          int minutes = lastTimeMinutes + 1;
-          hours = lastTimeHours;
-          //check valid time
-          if (minutes>=60) {
-            hours++; 
-            minutes=0;
-          }
-          if (hours>12) {
-            hours = 1;
-          }
+        int ms = millis();
 
+        // do it every x*1 seconds
+        if (minUp < ms) {
+          lastTimeMinutes = lastTimeMinutes + 1;
+          if (lastTimeMinutes >=60) {
+            lastTimeMinutes = 0;
+          }
+          if (lastTimeMinutes%10 ==  0) lastTimeHours = (lastTimeHours + 1) % 24;
+          
           //show time
-          updateDisplay(hours, minutes);
+          updateDisplay(lastTimeHours, lastTimeMinutes);
 
-          lastTimeMinutes = minutes;
-          lastTimeHours = hours;
-          // remember last update
-          lastTime = millis();
+          minUp = ms + 200;
         }
       } else {  //Real Time 
         // do it every 5 seconds
@@ -284,7 +263,7 @@ class BaernerZytUsermod : public Usermod {
           // check if we already updated this minute
           if (lastTimeMinutes != minutes) {
             // update the display with new time
-            updateDisplay(hourFormat12(localTime), minute(localTime));
+            updateDisplay(hour(localTime), minute(localTime));
 
             // remember last update time
             lastTimeMinutes = minutes;
