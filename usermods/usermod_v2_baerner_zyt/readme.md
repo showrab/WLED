@@ -17,6 +17,9 @@ These are the parameters that controls the behavior in the WLED :
 * layout: Number of the layout
 * test: Test mode to test the layouts with fast changing numbers
 
+## WiFi Configuration
+Description on how to [connect your Bärner-Zyt to your Router](WiFiSetup.md) or scann this QR-Code.
+![QR-code](images/qr-code.png)
 
 ## Layouts
 
@@ -26,7 +29,7 @@ To define a new layout increment MAX_LAYOUTS by one, copy a already defined layo
 In File zyt-macros.h add new line every where you find a //insert new layout here
 
 To end the words on a array add -1 
-### Installation
+## Installation
 
 * `USERMOD_BAERNERZYT`   - define this to have this usermod included wled00\usermods_list.cpp
 * `USERMOD_ID_BAERNERZYT - define this to have this usermod included wled00\const.h

@@ -25,7 +25,7 @@ Die Bärner Zyt ist jetzt mit deinem Router verbunden und kann über die Adresse
 Für weitere Informationen zu den Eintellungen https://www.youtube.com/watch?v=6eCE2BpLaUQ
 
 Die Bärner Zyt ist ein Usermode der auf WLED https://kno.wled.ge/ aufbaut.
-Die Projektseit findest du unter https://github.com/showrab/WLED
+Die Projektseite findest du unter https://github.com/showrab/WLED
 
 
 
