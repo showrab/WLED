@@ -1,4 +1,13 @@
 <p align="center">
+
+# Welcome to Bärner Zyt WLED Usermode! ✨
+This WordClock adabtation for a Clock who writes the time in Swiss german from Bern. It uses the WLED as LED Framework and is a Usermode, a own programm which enable/disable the right LEDs in the 2D Matrix to show the time. 
+
+Read more about the [Bärener-Zyt Usermode](usermods/usermod_v2_baerner_zyt/readme.md)
+
+
+</p>
+<p align="center">
   <img src="/images/wled_logo_akemi.png">
   <a href="https://github.com/Aircoookie/WLED/releases"><img src="https://img.shields.io/github/release/Aircoookie/WLED.svg?style=flat-square"></a>
   <a href="https://raw.githubusercontent.com/Aircoookie/WLED/master/LICENSE"><img src="https://img.shields.io/github/license/Aircoookie/wled?color=blue&style=flat-square"></a>
@@ -10,8 +19,7 @@
 
   </p>
 
-# Welcome to my project WLED! ✨
-
+# Welcome to WLED! ✨
 A fast and feature-rich implementation of an ESP8266/ESP32 webserver to control NeoPixel (WS2812B, WS2811, SK6812) LEDs or also SPI based chipsets like the WS2801 and APA102!
 
 ## ⚙️ Features

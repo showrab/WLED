@@ -1,17 +1,21 @@
 # Bärner Zyt (Word Clock) Usermod V2
 
 This usermod drives an max 16x16 pixel matrix wordclock with WLED. There are 4 additional dots for the minutes. 
-The visualisation is described by 4 masks with LED numbers (single dots for minutes, minutes, hours). The index of the LEDs in the masks always starts at 0, even if the ledOffset is not 0.
-There are parameters that control behavior:
- 
-active: enable/disable usermod
-matrixCols: width of the matrix (this alows to show a small layout on a larger matrix)
-ledOffset: number of LEDs before the wordclock LEDs
-diplayItIs: enable/disable display of "Es ist" on the clock
-minuteDots: show up to 4 dots to see exact minutes between the five minutes
-minuteWords: say the minutes between the five minutes in words (scho fasch füf ab drü)
-layout: Number of the layout
-test: Test mode to tesst the layouts with fast changing numbers
+
+The visualisation is described by 4 masks with LED numbers (single dots for minutes, minutes, hours). 
+
+The index of the LEDs in the masks always starts at 0, even if the ledOffset is not 0.
+
+These are the parameters that controls the behavior in the WLED :
+ ![Usermode](images/usermode.png)
+* active: enable/disable usermod
+* matrixCols: width of the matrix (this alows to show a small layout on a larger matrix)
+* ledOffset: number of LEDs before the wordclock LEDs
+* dyplay It Is: enable/disable display of "Es ist" on the clock
+* minuteDots: show up to 4 dots to see exact minutes between the five minutes
+* minuteWords: say the minutes between the five minutes in words (scho fasch füf ab drü)
+* layout: Number of the layout
+* test: Test mode to test the layouts with fast changing numbers
 
 
 ## Layouts
