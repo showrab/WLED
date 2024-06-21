@@ -18,8 +18,8 @@ These are the parameters that controls the behavior in the WLED :
 * test: Test mode to test the layouts with fast changing numbers
 
 ## WiFi Configuration
-Description on how to [connect your Bärner-Zyt to your Router](WiFiSetup.md) or scann this QR-Code.
-![QR-code](images/qr-code.png)
+Description on how to [connect your Bärner-Zyt to your Router](WiFiSetup_de.md) or scann this QR-Code.
+<img src="images/qr-code.png" alt="QR-Code" title="QR-Code" width=300/>
 
 ## Layouts
 
