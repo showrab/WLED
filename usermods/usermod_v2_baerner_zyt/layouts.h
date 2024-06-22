@@ -10,7 +10,7 @@
     //--------------Layout 0 (16x16 blank layout)---------------- 
     #define LAYOUT_COLS_0 16
 
-    //--------------Layout 1 Melissa (11x11 (4LED 11te Zeile) Schweizerdeutsch)----------------
+    //--------------Layout 1 Melissa (11x10 (+4LED 11te Zeile) Schweizerdeutsch)----------------
     //  0- 10  ES-ISCH-FÜF
     // 11- 21  VIERTU--ZÄH
     // 22- 32  ZWÄNZG--VOR
