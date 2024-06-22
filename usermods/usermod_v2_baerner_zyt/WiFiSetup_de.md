@@ -8,7 +8,7 @@ WiFi Netzwerk «BaernerZytAP» suchen und auswählen.
 
 Eine Webseite wird angezeig. Falls nicht, im Web-Browser die Adresse http://4.3.2.1/ eingeben.
 
-![wled](images/wled_wled_settings.png)
+![wifi_settings](images/wled_wifi_settings.png)
 
 Hier kann in den «WIFI SETTINGS» der eigene Router mit «SCAN» gesucht werden
 
