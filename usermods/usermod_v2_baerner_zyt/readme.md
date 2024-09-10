@@ -85,6 +85,18 @@ In File [zyt-macros.h](zyt-macros.h) add new line every where you find a "//inse
 ## WLED requirements
 WLAN and NTP
 
+## Time
+For people wihout a internet connection (Router/Access-Point) we have the possibility to set the time so:
+```
+curl -X POST "http://192.168.0.102/json/state" -d '{"time":1724433301}' -H "Content-Type: application/json"
+```
+If you have your cell phone an connect to the BaernerZyt access point somehow the WLED can get the time.
+
+### GPS
+As the GPS modules are small and cheap we try to read the time out of the GPS serial stream. The GPS module has to be connected tho the serial1 pins: RX=nn, TX=nn. 
+
+To decode the stream wi use the "ArduinoNmeaParser.h" library.
+
 
 ## Change Log
 
