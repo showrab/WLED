@@ -90,13 +90,9 @@ For people wihout a internet connection (Router/Access-Point) we have the possib
 ```
 curl -X POST "http://192.168.0.102/json/state" -d '{"time":1724433301}' -H "Content-Type: application/json"
 ```
-If you have your cell phone an connect to the BaernerZyt access point somehow the WLED can get the time.
+If you have your cell phone an connect to the BaernerZyt access point somehow the WLED can get the time too.
 
-### GPS
-As the GPS modules are small and cheap we try to read the time out of the GPS serial stream. The GPS module has to be connected tho the serial1 pins: RX=nn, TX=nn. 
-
-To decode the stream wi use the "ArduinoNmeaParser.h" library.
-
+Or use a GPS-Modul with the Usermod [GPS-Time](../usermod_v2_gps_time/readme.md)
 
 ## Change Log
 

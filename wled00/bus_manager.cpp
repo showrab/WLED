@@ -390,7 +390,9 @@ void BusPwm::show() {
     #ifdef ESP8266
     analogWrite(_pins[i], scaled);
     #else
+    cli();
     ledcWrite(_ledcStart + i, scaled);
+    sei();
     #endif
   }
 }

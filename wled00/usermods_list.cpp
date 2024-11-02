@@ -4,6 +4,7 @@
  *   (for v1 usermods using just usermod.cpp, you can ignore this file)
  */
 #define USERMOD_BAERNERZYT
+#define USERMOD_GPS_TIME
 
 /*
  * Add/uncomment your usermod filename here (and once more below)
@@ -210,6 +211,10 @@
 #include "../usermods/stairway_wipe_basic/stairway-wipe-usermod-v2.h"
 #endif
 
+#ifdef USERMOD_GPS_TIME
+  #include "../usermods/usermod_v2_gps_time/usermod_v2_gps_time.h"
+#endif
+
 void registerUsermods()
 {
 /*
@@ -396,6 +401,10 @@ void registerUsermods()
 
   #ifdef USERMOD_STAIRCASE_WIPE
   usermods.add(new StairwayWipeUsermod());
+  #endif
+
+  #ifdef USERMOD_GPS_TIME
+  usermods.add(new GpsTimeUsermod());
   #endif
 }
 

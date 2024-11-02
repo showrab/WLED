@@ -4,8 +4,6 @@
 #include "layouts.h"
 #include "zyt-macros.h"
 
-#define PERIOD 2*60*1000L //alle 2 min zeit vom GPS lesen
-
 /*
  * Usermods allow you to add own functionality to WLED more easily
  * See: https://github.com/Aircoookie/WLED/wiki/Add-own-functionality
@@ -37,11 +35,6 @@ class BaernerZytUsermod : public Usermod {
     bool minuteWords = true;
     int layout = 1;
     bool test = false;
-    
-    //GPS
-    long targetTime = 0;
-    boolean isFlushed = false;
-    String readString;
 
     //#define SEGMENT             strip._segments[strip.getCurrSegmentId()]
 
@@ -224,9 +217,6 @@ class BaernerZytUsermod : public Usermod {
     void setup() {
       //const uint16_t matrixCols = SEGMENT.virtualWidth();
       //const uint16_t  matrixRows = SEGMENT.virtualHeight();
-
-      //GPS an Serial-1 RX = 37
-      Serial1.begin(9600,SERIAL_8N1,37,39);
     }
 
     /*
@@ -247,6 +237,8 @@ class BaernerZytUsermod : public Usermod {
      *    Instead, use a timer check as shown here.
      */
     void loop() {
+      if (!usermodActive || strip.isUpdating()) return;
+
       //Test the Layout with fast changing numbers
       if (test) {
         int ms = millis();
@@ -281,72 +273,6 @@ class BaernerZytUsermod : public Usermod {
           }
           // remember last update
           lastTime = millis();
-        }
-      }
-
-      //GPS String an Serial-1 parsen
-      //$GPRMC,191636.00,A,4646.35372,N,00736.67504,E,1.213,,080924,,,A*7E
-      //        | | |  |                                      | | |
-      //        | | |  ms                                     | | YY
-      //        | | s                                         | MM
-      //        | min                                         DD
-      //        h
-      //$GPGGA,191825.00,4646.34913,N,00736.67358,E,1,05,2.30,517.2,M,47.3,M,,*5E
-      //        | | |  |
-      //        | | |  ms
-      //        | | s
-      //        | min
-      //        h
-      
-      if (millis() - targetTime > PERIOD) {
-        if (!isFlushed) {
-          Serial1.flush();
-          isFlushed = true;
-        } else {
-          if (Serial1.available()) {                // If anything comes in Serial-1
-            readString=Serial1.readStringUntil(13); //NMEA data ends with 'return' character, which is ascii(13)
-            readString.trim();                      // they say NMEA data starts with "$", but the Arduino doesn't think so.
-            //Serial.println(readString);           //All the raw sentences will be sent to monitor, if you want them, maybe to see the labels and data order.
-
-            //Start Parsing by finding data, put it in a string of character array, then removing it, leaving the rest of thes sentence for the next 'find'
-            if (readString.startsWith("$GPRMC")) {   //I picked this sentence, you can pick any of the other labels and rearrange/add sections as needed. 
-              //Serial.println(readString);          // display raw GPRMC data in Serial Monitor
-
-              //Time is first in RMC sentence. Format: hhmmss.ss
-              int pos=readString.indexOf(',');       //look for comma delimetrer
-              readString.remove(0, pos+1);           // Remove pos+1 characters starting at index=0, this one strips off "$GPRMC" in my sentence
-              char h[2];
-              h[0] = readString.charAt(0);
-              h[1] = readString.charAt(1);
-              int hours = atoi(h);
-
-              char m[2];
-              m[0] = readString.charAt(2);
-              m[1] = readString.charAt(3);
-              int minutes = atoi(m);
-
-              char s[2];
-              s[0] = readString.charAt(4);
-              s[1] = readString.charAt(5);
-              int seconds = atoi(s);
-
-              long unixTime = (hours * 3600) + (minutes * 60) + seconds;
-
-              // Serial.print(hours);
-              // Serial.print(":");
-              // Serial.print(minutes);
-              // Serial.print(":");
-              // Serial.print(seconds);
-              // Serial.println();
-
-              // Serial.println(unixTime);
-
-              toki.setTime(unixTime);  //set Time in WLED
-
-              isFlushed = false;
-              targetTime = millis();   // change scheduled time exactly, no slippage will happen
-            }
-          }
         }
       }
     } //loop

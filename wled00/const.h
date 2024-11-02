@@ -153,6 +153,7 @@
 #define USERMOD_ID_LDR_DUSK_DAWN         43     //Usermod "usermod_LDR_Dusk_Dawn_v2.h"
 #define USERMOD_ID_STAIRWAY_WIPE         44     //Usermod "stairway-wipe-usermod-v2.h"
 #define USERMOD_ID_BAERNERZYT            45     //Usermod "usermod_v2_baerner_zyt.h"
+#define USERMOD_ID_GPS_TIME              46     //Usermod "usermod_v2_gps_time.h"
 
 
 //Access point behavior
