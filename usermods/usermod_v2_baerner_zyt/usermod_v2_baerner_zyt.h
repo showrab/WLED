@@ -204,6 +204,11 @@ class BaernerZytUsermod : public Usermod {
             setMinutes(11);
             setHours(hours + nh, false);
             break;
+        case 12:
+            // 2 vor (minutesWords)
+            setMinutes(0);
+            setHours(hours + nh, false);
+            break;
       }
     }
 
