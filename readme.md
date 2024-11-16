@@ -3,7 +3,7 @@
 # Welcome to Bärner Zyt WLED Usermode! ✨
 This WordClock adabtation for a Clock who writes the time in Swiss german from Bern. It uses the WLED as LED Framework and is a Usermode, a own programm which enable/disable the right LEDs in the 2D Matrix to show the time. 
 
-Read more about the [Bärener-Zyt Usermode](usermods/usermod_v2_baerner_zyt/readme.md)
+Read more about the [Bärner-Zyt Usermode](usermods/usermod_v2_baerner_zyt/readme.md)
 
 
 </p>

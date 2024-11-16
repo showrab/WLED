@@ -5,6 +5,7 @@
  */
 #define USERMOD_BAERNERZYT
 #define USERMOD_GPS_TIME
+#define USERMOD_AP_MODE_OFF
 
 /*
  * Add/uncomment your usermod filename here (and once more below)
@@ -215,6 +216,10 @@
   #include "../usermods/usermod_v2_gps_time/usermod_v2_gps_time.h"
 #endif
 
+#ifdef USERMOD_AP_MODE_OFF
+  #include "../usermods/usermod_v2_ap-mode_off/usermod_v2_ap-mode_off.h"
+#endif
+
 void registerUsermods()
 {
 /*
@@ -405,6 +410,10 @@ void registerUsermods()
 
   #ifdef USERMOD_GPS_TIME
   usermods.add(new GpsTimeUsermod());
+  #endif
+
+    #ifdef USERMOD_AP_MODE_OFF
+  usermods.add(new ApModeOffUsermod());
   #endif
 }
 
