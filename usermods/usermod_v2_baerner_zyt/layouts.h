@@ -172,7 +172,7 @@
     //----------Layout 4 Martin (12x12 Schweizerdeutsch)------------
     //  0- 11  --ES-ISCH---
     // 12- 23  GRAD°SCHO--°
-    // 24- 35  -GLI°-FASCH°
+    // 24- 35  -GLII-FASCH°
     // 36- 47  ZWÄNZG--FÜF-
     // 48- 59  -ZÄH--VIERTU
     // 60- 71  VOR-AB-HAUBI
@@ -187,7 +187,7 @@
     #define MINUTE_DOTS_4 16, 23, 28, 35
     #define PLUS_1_4      12,13,14,15,139,140,141,-1  //GRAD GSI
     #define PLUS_2_4      139,140,141,-1              //GSI
-    #define MINUS_2_4     25,26,27,-1                 //GLI
+    #define MINUS_2_4     25,26,27,28,-1                 //GLII
     #define MINUS_1_4     17,18,19,20,30,31,32,33,34  //SCHO FASCH
     #define NEXT_HOUR_4   1
 
