@@ -6,33 +6,22 @@
  * This Usermod turns the AP-Mode by default **off**.
  *
  * To turn **on** the AP-Mode again you can press a button. Another press of the button turns the AP-Mode **off** again.
- * 
- * Usermods allow you to add own functionality to WLED more easily
- * See: https://github.com/Aircoookie/WLED/wiki/Add-own-functionality
- * 
- * Creating a usermod:
- * This file serves as an example. If you want to create a usermod, it is recommended to use usermod_v2_empty.h from the usermods folder as a template.
- * Please remember to rename the class and file to a descriptive name.
- * You may also use multiple .h and .cpp files.
- * 
- * Using a usermod:
- * 1. Copy the usermod into the sketch folder (same folder as wled00.ino)
- * 2. Register the usermod by adding #include "usermod_filename.h" in the top and registerUsermod(new MyUsermodClass()) in the bottom of usermods_list.cpp
  */
 
-//class name. Use something descriptive and leave the ": public Usermod" part :)
 class ApModeOffUsermod : public Usermod {
 
   private:
     // Push-Button
-    int debounceTime = 0;
-    int8_t buttonPin = 33;
-    // UserMode
+    static const int DEBOUNCE_TIME = 1000;  //Button press once a second possible
+    int newIntervall = 0;
+    int8_t buttonPin = 33;            //Button is connected to this pin and ground
+    bool isTouchButton = false;       //is button a tocuh button?
+    // Usermod
     static const char _name[];
-    bool enabled = false;
+    bool enabled = false;             //mod is off the first time
     // State
-    bool isApModeOn = true;
-    bool init = false;
+    bool isApModeOn = true;           //AP-Mode on the first time
+    bool init = false;                //dont disable AP-Mode if mod is not enabled
   public:
 
     /**
@@ -53,10 +42,9 @@ class ApModeOffUsermod : public Usermod {
      * You can use it to initialize variables, sensors or similar.
      */
     void setup() {
-      // do your set-up here
       if (enabled) {
         pinMode(buttonPin, INPUT_PULLUP);
-        init = true;
+        init = true; //at startup disable AP-Mode
         Serial.println("ApModeOffUsermod setup");
       }
     }
@@ -71,40 +59,59 @@ class ApModeOffUsermod : public Usermod {
 
     /*
      * loop() is called continuously. Here you can check for events, read sensors, etc.
-     * 
-     * Tips:
-     * 1. You can use "if (WLED_CONNECTED)" to check for a successful network connection.
-     *    Additionally, "if (WLED_MQTT_CONNECTED)" is available to check for a connection to an MQTT broker.
-     * 
-     * 2. Try to avoid using the delay() function. NEVER use delays longer than 10 milliseconds.
-     *    Instead, use a timer check as shown here.
      */
     void loop() {
       // if usermod is disabled or called during strip updating just exit
-      // NOTE: on very long strips strip.isUpdating() may always return true so update accordingly
       if (!enabled || strip.isUpdating()) return;
 
-      if (init || (millis() - debounceTime > 1000 && digitalRead(buttonPin) == false)) {
-        if (isApModeOn) {
-          apModeOff();
-        } else {
-          apModeOn();
+      //Is usermod enabled or is button pressed?
+      if (init || millis() - newIntervall > DEBOUNCE_TIME) {
+        if (init || buttonPressed()) {
+          if (isApModeOn) {
+            apModeOff();
+          } else {
+            apModeOn();
+          }
+          init = false;
         }
-        debounceTime = millis();
-        init = false;
+        newIntervall = millis();
       }
     }
 
+    bool buttonPressed() {
+      if (isTouchButton) {
+        // read the state of the pushbutton value:
+        int touchValue = touchRead(buttonPin);
+        Serial.print("touchValue = ");
+        Serial.print(touchValue);
+        Serial.println();
+        if (touchValue>16000) {
+          //strip.setPixelColor(3, CRGB::HotPink);
+          return true;
+        }
+        return false;
+      } else {
+        return digitalRead(buttonPin) == false;
+      }
+    }
+
+    /*
+     * Turn AP-Mode Off, and set global variable apActive = true so it won't restart
+     */
     void apModeOff() {
       Serial.println("AP-Mode Off");
-      apActive = true;
-      WiFi.softAPdisconnect(true); // AP-Mode ausschalten
+      dnsServer.stop();
+      WiFi.softAPdisconnect(true); // turn AP off
+      apActive = true;             // don't restart AP in wled.cpp
       isApModeOn = false;
     }
 
+    /*
+     * set global variable apActive = false to turn AP-Mode on in wled.cpp 
+     */
     void apModeOn() {
       Serial.println("AP-Mode On");
-      apActive = false; // AP-Mode einschalten
+      apActive = false; // restart AP in wled.cpp
       isApModeOn = true;
     }
 
@@ -169,6 +176,7 @@ class ApModeOffUsermod : public Usermod {
       top[F("enabled")] = enabled;
       JsonArray pinArray = top.createNestedArray(F("pin"));
       pinArray.add(buttonPin);
+      top[F("touchButton")] = isTouchButton;
     }
 
     /*
@@ -194,8 +202,10 @@ class ApModeOffUsermod : public Usermod {
       bool configComplete = !top.isNull();
       configComplete &= getJsonValue(top["enabled"], enabled);
       // "pin" fields have special handling in settings page (or some_pin as well)
-      configComplete &= getJsonValue(top["pin"][0], buttonPin, 33);
-      init = true;
+      configComplete &= getJsonValue(top["pin"][0], buttonPin, 4);
+      configComplete &= getJsonValue(top["touchButton"], isTouchButton, false);
+      
+      init = enabled;
       Serial.print("ApModeOffUsermod enabled=");
       Serial.println(enabled);
       return configComplete;
@@ -207,7 +217,8 @@ class ApModeOffUsermod : public Usermod {
      * be careful not to add too much as oappend() buffer is limited to 3k
      */
     void appendConfigData() {
-      oappend(SET_F("addInfo('AP-Mode Off Usermod:pin', 1, 'MC Button-Pin');"));
+      //oappend(SET_F("addInfo('AP-Mode Off Usermod:enabled', 1, 'MC Button-Pin');"));
+      oappend(SET_F("addInfo('AP-Mode Off Usermod:touchButton', 1, 'Touch-Pins: 2,4,12,13,14,15,27,32,33');"));
     }
 
     /*
