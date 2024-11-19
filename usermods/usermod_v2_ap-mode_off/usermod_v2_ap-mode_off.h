@@ -2,6 +2,9 @@
 
 #include "wled.h"
 
+#define MIN_THRESHOLD 100
+#define DEBOUNCE_TIME 1000 //Button press once a second possible
+
 /*
  * This Usermod turns the AP-Mode by default **off**.
  *
@@ -12,11 +15,10 @@ class ApModeOffUsermod : public Usermod {
 
   private:
     // Push-Button
-    static const int DEBOUNCE_TIME = 1000;  //Button press once a second possible
     int newIntervall = 0;
     int8_t buttonPin = 33;            //Button is connected to this pin and ground
     bool isTouchButton = false;       //is button a tocuh button?
-    int apModeOffTouchThreshold = 16000;
+    bool wasAPModeOffButtonLow = true;
     // Usermod
     static const char _name[];
     bool enabled = false;             //mod is off the first time
@@ -29,8 +31,31 @@ class ApModeOffUsermod : public Usermod {
     uint8_t apPixR = 255;
     uint8_t apPixG = 255;
     uint8_t apPixB = 255;
+    //Ringbuffer
+    int ringSize = 5;
+    int ring[10] = {0,0,0,0,0,0,0,0,0,0};
+    int index = 0;
   public:
-
+    //------start ringbuffer-------
+    void addRing(int val) {
+      ring[index++] = val;
+      if (index >= ringSize) index = 0;
+    }
+    int maxRing() {
+      int max = 0;
+      for (int i = 0; i < ringSize; i++) {
+        if (ring[i] > max) max = ring[i];
+      }
+      return max;
+    }
+    int minRing() {
+      int min = 2147483647;
+      for (int i = 0; i < ringSize; i++) {
+        if (ring[i] < min) min = ring[i];
+      }
+      return min;
+    }
+    //------end ringbuffer-------
     /**
      * Enable/Disable the usermod
      */
@@ -89,31 +114,61 @@ class ApModeOffUsermod : public Usermod {
     }
 
     bool buttonPressed() {
+      bool isAPModeOffButtonPressed;
+      int max;
+      int min;
+      int div;
+      int trigger;
+
       if (isTouchButton) {
         // read touch button value:
         int touchValue = touchRead(buttonPin);
+        max = maxRing();
+        min = minRing();
+        div = max - min;
+        trigger = max + MIN_THRESHOLD + 2 * div;
+        if (isAPModeOffButtonPressed = touchValue >= trigger) { } else {
+          wasAPModeOffButtonLow = true;
+        }
+        addRing(touchValue);
 
         //log
-        char touchValueChar[7];
-        itoa(touchValue, touchValueChar, 10);
-        strcpy(state, "touchValue = ");
-        strcat(state, touchValueChar);
-        Serial.println(state);
-
-        return touchValue >= apModeOffTouchThreshold;
+        setState("touch = ", touchValue);
       } else {
         //read push button value
         int buttonPressed = digitalRead(buttonPin);
+        if (isAPModeOffButtonPressed = buttonPressed == false) {} else {
+          wasAPModeOffButtonLow = true;
+        };
 
         //log
-        char buttonValueChar[2];
-        itoa(buttonPressed, buttonValueChar, 10);
-        strcpy(state, "button = ");
-        strcat(state, buttonValueChar);
-        Serial.println(state);
-
-        return buttonPressed == false;
+        setState("button = ", buttonPressed);
       }
+      Serial.print(state);
+
+      Serial.print(", button = ");
+      Serial.print(isAPModeOffButtonPressed);
+
+      Serial.print(", max = ");
+      Serial.print(max);
+      Serial.print(", min = ");
+      Serial.print(min);
+      Serial.print(", div = ");
+      Serial.print(div);
+      Serial.print(", triger >= ");
+      Serial.print(trigger);
+      Serial.println();
+
+      bool ret = isAPModeOffButtonPressed && wasAPModeOffButtonLow;
+      if (isAPModeOffButtonPressed) wasAPModeOffButtonLow = false;
+      return ret;
+    }
+
+    void setState(char key[], int value) {
+        char valueChar[7];
+        itoa(value, valueChar, 10);
+        strcpy(state, key);
+        strcat(state, valueChar);
     }
 
     /*
@@ -205,7 +260,6 @@ class ApModeOffUsermod : public Usermod {
       JsonArray pinArray = top.createNestedArray(F("pin"));
       pinArray.add(buttonPin);
       top[F("Touch Button")] = isTouchButton;
-      top[F("Touch Threshold")] = apModeOffTouchThreshold;
       top[F("AP-Mode On")] = apModeOnPixPos;
     }
 
@@ -234,12 +288,7 @@ class ApModeOffUsermod : public Usermod {
       // "pin" fields have special handling in settings page (or some_pin as well)
       configComplete &= getJsonValue(top["pin"][0], buttonPin, 4);
       configComplete &= getJsonValue(top["Touch Button"], isTouchButton, false);
-      configComplete &= getJsonValue(top["Touch Threshold"], apModeOffTouchThreshold, 16000);
       configComplete &= getJsonValue(top["AP-Mode On"], apModeOnPixPos, 16);
-
-      if (apModeOffTouchThreshold < 32) {
-        apModeOffTouchThreshold = 16000;
-      }
       
       init = enabled;
       if (!isTouchButton) {
