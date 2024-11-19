@@ -16,12 +16,19 @@ class ApModeOffUsermod : public Usermod {
     int newIntervall = 0;
     int8_t buttonPin = 33;            //Button is connected to this pin and ground
     bool isTouchButton = false;       //is button a tocuh button?
+    int apModeOffTouchThreshold = 16000;
     // Usermod
     static const char _name[];
     bool enabled = false;             //mod is off the first time
     // State
     bool isApModeOn = true;           //AP-Mode on the first time
     bool init = false;                //dont disable AP-Mode if mod is not enabled
+    char state[30] = "starting";
+    // AP-Mode nn staus pixel
+    int apModeOnPixPos = 16;
+    uint8_t apPixR = 255;
+    uint8_t apPixG = 255;
+    uint8_t apPixB = 255;
   public:
 
     /**
@@ -46,7 +53,10 @@ class ApModeOffUsermod : public Usermod {
         pinMode(buttonPin, INPUT_PULLUP);
         init = true; //at startup disable AP-Mode
         Serial.println("ApModeOffUsermod setup");
+      } else {
+        Serial.println("ApModeOffUsermod disabled");
       }
+      strcpy(state, "initDone");
     }
 
     /*
@@ -80,18 +90,29 @@ class ApModeOffUsermod : public Usermod {
 
     bool buttonPressed() {
       if (isTouchButton) {
-        // read the state of the pushbutton value:
+        // read touch button value:
         int touchValue = touchRead(buttonPin);
-        Serial.print("touchValue = ");
-        Serial.print(touchValue);
-        Serial.println();
-        if (touchValue>16000) {
-          //strip.setPixelColor(3, CRGB::HotPink);
-          return true;
-        }
-        return false;
+
+        //log
+        char touchValueChar[7];
+        itoa(touchValue, touchValueChar, 10);
+        strcpy(state, "touchValue = ");
+        strcat(state, touchValueChar);
+        Serial.println(state);
+
+        return touchValue >= apModeOffTouchThreshold;
       } else {
-        return digitalRead(buttonPin) == false;
+        //read push button value
+        int buttonPressed = digitalRead(buttonPin);
+
+        //log
+        char buttonValueChar[2];
+        itoa(buttonPressed, buttonValueChar, 10);
+        strcpy(state, "button = ");
+        strcat(state, buttonValueChar);
+        Serial.println(state);
+
+        return buttonPressed == false;
       }
     }
 
@@ -120,7 +141,14 @@ class ApModeOffUsermod : public Usermod {
      * Creating an "u" object allows you to add custom key/value pairs to the Info section of the WLED web UI.
      * Below it is shown how this could be used for e.g. a light sensor
      */
-    void addToJsonInfo(JsonObject& root) {}
+    void addToJsonInfo(JsonObject& root) {
+      // if "u" object does not exist yet wee need to create it
+      JsonObject user = root["u"];
+      if (user.isNull()) user = root.createNestedObject("u");
+
+      JsonArray statusArr = user.createNestedArray(FPSTR(_name)); //name
+      statusArr.add(state); //value      
+    }
 
     /*
      * addToJsonState() can be used to add custom entries to the /json/state part of the JSON API (state object).
@@ -176,7 +204,9 @@ class ApModeOffUsermod : public Usermod {
       top[F("enabled")] = enabled;
       JsonArray pinArray = top.createNestedArray(F("pin"));
       pinArray.add(buttonPin);
-      top[F("touchButton")] = isTouchButton;
+      top[F("Touch Button")] = isTouchButton;
+      top[F("Touch Threshold")] = apModeOffTouchThreshold;
+      top[F("AP-Mode On")] = apModeOnPixPos;
     }
 
     /*
@@ -203,9 +233,18 @@ class ApModeOffUsermod : public Usermod {
       configComplete &= getJsonValue(top["enabled"], enabled);
       // "pin" fields have special handling in settings page (or some_pin as well)
       configComplete &= getJsonValue(top["pin"][0], buttonPin, 4);
-      configComplete &= getJsonValue(top["touchButton"], isTouchButton, false);
+      configComplete &= getJsonValue(top["Touch Button"], isTouchButton, false);
+      configComplete &= getJsonValue(top["Touch Threshold"], apModeOffTouchThreshold, 16000);
+      configComplete &= getJsonValue(top["AP-Mode On"], apModeOnPixPos, 16);
+
+      if (apModeOffTouchThreshold < 32) {
+        apModeOffTouchThreshold = 16000;
+      }
       
       init = enabled;
+      if (!isTouchButton) {
+        pinMode(buttonPin, INPUT_PULLUP);
+      }
       Serial.print("ApModeOffUsermod enabled=");
       Serial.println(enabled);
       return configComplete;
@@ -218,7 +257,8 @@ class ApModeOffUsermod : public Usermod {
      */
     void appendConfigData() {
       //oappend(SET_F("addInfo('AP-Mode Off Usermod:enabled', 1, 'MC Button-Pin');"));
-      oappend(SET_F("addInfo('AP-Mode Off Usermod:touchButton', 1, 'Touch-Pins: 2,4,12,13,14,15,27,32,33');"));
+      oappend(SET_F("addInfo('AP-Mode Off Usermod:Touch Button', 1, 'Touch-Pins: 2,4,12,13,14,15,27,32,33');"));
+      oappend(SET_F("addInfo('AP-Mode Off Usermod:AP-Mode On', 1, 'Pixel Pos');"));
     }
 
     /*
@@ -227,6 +267,17 @@ class ApModeOffUsermod : public Usermod {
      */
     uint16_t getId() {
       return USERMOD_ID_AP_MODE_OFF;
+    }
+
+    /*
+     * handleOverlayDraw() is called just before every show() (LED strip update frame) after effects have set the colors.
+     * Use this to blank out some LEDs or set them to a different color regardless of the set effect mode.
+     * Commonly used for custom clocks (Cronixie, 7 segment)
+     */
+    void handleOverlayDraw() {
+      if (enabled && isApModeOn) {
+        strip.setPixelColor(apModeOnPixPos, RGBW32(apPixR,apPixG,apPixB,0));
+      }
     }
 };
 

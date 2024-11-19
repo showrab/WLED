@@ -6,6 +6,11 @@ This Usermod turns the AP-Mode by default **off**.
 
 To turn **on** the AP-Mode again you can press a button. Another press of the button turns the AP-Mode **off** again.
 
+## Warning
+Touch Buttons are only on Pin 2,4,12,13,14,15,27,32,33 possible. 
+
+If you misconfigured the buttons and can not enter in AP-Mode. You have to press the button 0 (Button on ESP32 Board) for 6s. This deletes the network configuration and turns on the AP-Mode after. Now you have to reconfigure the WiFi settings an can change the usermod button setting.
+
 ## Installation 
 
 Uncomment the corresponding lines in `usermods_list.cpp` and compile!  
@@ -15,6 +20,11 @@ Push-button
 
 | Push Button | ESP32 |
 |-------|---|
-| 1 | GND|
-| 2  | Pin 33 (Change in config)|
+| 1  | Pin 33 (Change in config)|
+| 2 | GND|
 
+Touch-button 
+
+| Touch Button | ESP32 |
+|-------|---|
+| wire/alufoil  | Pin 4 (Change in config)|
