@@ -33,7 +33,7 @@ class ApModeOffUsermod : public Usermod {
     uint8_t apPixB = 255;
     //Ringbuffer
     int ringSize = 5;
-    int ring[10] = {0,0,0,0,0,0,0,0,0,0};
+    int ring[10] = {100000,0,0,0,0,0,0,0,0,0};
     int index = 0;
   public:
     //------start ringbuffer-------
