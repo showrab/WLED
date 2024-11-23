@@ -26,6 +26,9 @@ These are the parameters that controls the behavior of "Bärner Zyt" in the WLED
   * Color Order: GRB
   * Lenght: 114 (Layout 1: 10x11 +4) 
   * GPIO: 16
+  * Button 0 GPIO: 0 Pushbutton //Button on ESP32 Board: LED ON/OFF
+  * Button 1 GPIO: 13 Touch     //Macro presets 20: Brightness
+  * Button 2 GPIO: 14 Touch     //Macro presets 30: Effect rotate
 
 * 2D Configuration
   * Strip or panel: 2D Matrix
@@ -43,18 +46,58 @@ These are the parameters that controls the behavior of "Bärner Zyt" in the WLED
     * Dimension: 4x1
     * Offset: 0x10
   * Time & Macros
-    * Get time from NTP server: true            
+    * Get time from NTP server: true //Sta-Mode,
+    * Get time from NTP server: false //GPS           
     ch.pool.ntp.org
     * Use 24h format: true
     * Time zone: CET/CEST
+    * Button actions
+      |push switch|short|long|double|comment|
+      |---|---|---|---|---|
+      |Button 0| 0|||on ESP32 Board: ON/OFF|
+      |Button 1|20|||Preset 30: rotate brightness|
+      |Button 2|30|||Preset 50: rotate effects|
   * Usermods
-    *BaernerZyt
+    * BaernerZyt
       * Aktiv: true
       * LED Matrix Breite: 11 (depends on the layout)
-      * Offset: 0
+      * Offset: 
       * Zeige ES ISCH: true
       * Minuten Punkte: true
       * Layout: 1
+    * GPS Time Usermod
+      * Enabled: true //Time from the GPS-Module
+      * Pin: 18 //ESP32 RX-Pin zu GPS TX-Pin
+      * Period: 3600s
+    * AP-Mode Off Usermod
+      * Enabled: true  //In AP-Mode turn off the AP-Mode
+      * Pin: 4 
+      * Touch Button: true  //Touch-Pins: 2,4,12,13,14,15,27,32,33
+      * AP Mode On Pixel Pos: 113
+* Security & Updates
+  * Backup & Restore
+    * Restore presets 
+      * Browse: WLED/usermods/usermod_v2_baerner_zyt/settings/wled_presets.json Upload
+    * Restore configuration
+      * Browse: WLED/usermods/usermod_v2_baerner_zyt/settings/wled_cfg.json Upload
+  
+## Presets
+* Brightness
+
+  |Preset #|API command|
+  |---|---|
+  |20|P1=21;P2=23;PL=~|
+  |21|{"bri":32}|
+  |22|{"bri":64}|
+  |23|{"bri":128}|
+
+* Effects
+
+  |Preset #|API command|
+  |---|---|
+  |30|P1=31&P2=44&PL=~|
+  |31-35|Effekte|
+  |36-44|Solid colors||
 
 ## WiFi Configuration
 Description on how to [connect your Bärner-Zyt to your Router](WiFiSetup_de.md) or scann this QR-Code un the back of your "Bärner-Zyt" watch.

@@ -2,8 +2,9 @@
 
 #include "wled.h"
 
-#define MIN_THRESHOLD 100
-#define DEBOUNCE_TIME 1000 //Button press once a second possible
+#define MIN_THRESHOLD 700
+#define DEBOUNCE_TIME 500 //ms between button press
+#define RING_SIZE 10
 
 /*
  * This Usermod turns the AP-Mode by default **off**.
@@ -32,25 +33,24 @@ class ApModeOffUsermod : public Usermod {
     uint8_t apPixG = 255;
     uint8_t apPixB = 255;
     //Ringbuffer
-    int ringSize = 5;
-    int ring[10] = {100000,0,0,0,0,0,0,0,0,0};
+    int ring[RING_SIZE] = {0};
     int index = 0;
   public:
     //------start ringbuffer-------
     void addRing(int val) {
       ring[index++] = val;
-      if (index >= ringSize) index = 0;
+      if (index >= RING_SIZE) index = 0;
     }
     int maxRing() {
       int max = 0;
-      for (int i = 0; i < ringSize; i++) {
+      for (int i = 0; i < RING_SIZE; i++) {
         if (ring[i] > max) max = ring[i];
       }
       return max;
     }
     int minRing() {
       int min = 2147483647;
-      for (int i = 0; i < ringSize; i++) {
+      for (int i = 0; i < RING_SIZE; i++) {
         if (ring[i] < min) min = ring[i];
       }
       return min;
@@ -74,6 +74,7 @@ class ApModeOffUsermod : public Usermod {
      * You can use it to initialize variables, sensors or similar.
      */
     void setup() {
+      addRing(100000);
       if (enabled) {
         pinMode(buttonPin, INPUT_PULLUP);
         init = true; //at startup disable AP-Mode
@@ -129,8 +130,8 @@ class ApModeOffUsermod : public Usermod {
         trigger = max + MIN_THRESHOLD + 2 * div;
         if (isAPModeOffButtonPressed = touchValue >= trigger) { } else {
           wasAPModeOffButtonLow = true;
+          addRing(touchValue);
         }
-        addRing(touchValue);
 
         //log
         setState("touch = ", touchValue);
@@ -157,11 +158,38 @@ class ApModeOffUsermod : public Usermod {
       Serial.print(div);
       Serial.print(", triger >= ");
       Serial.print(trigger);
+      
+      int button1 = touchRead(13);
+      int button2 = touchRead(14);
+      Serial.print(", GPIO13 >= ");
+      Serial.print(button1);
+      Serial.print(", GPIO14 >= ");
+      Serial.print(button2);
+      if (button1 > 16000) {
+        shortPressAction(1);
+      }
+      if (button2 > 15000) {
+        shortPressAction(2);
+      }
+      Serial.print(", touchThreshold >= ");
+      Serial.print(touchThreshold);
       Serial.println();
 
       bool ret = isAPModeOffButtonPressed && wasAPModeOffButtonLow;
       if (isAPModeOffButtonPressed) wasAPModeOffButtonLow = false;
       return ret;
+    }
+
+    /**
+     * handleButton() can be used to override default button behaviour. Returning true
+     * will prevent button working in a default way.
+     */
+    bool handleButton(uint8_t b) {
+      yield();
+      if (enabled){
+        if (b >=1 && b <=2) return true;
+      }
+      return false;
     }
 
     void setState(char key[], int value) {
