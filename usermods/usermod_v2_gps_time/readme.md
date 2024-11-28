@@ -15,7 +15,7 @@ DDMMYY = date
 
 ## Installation 
 
-Uncomment the corresponding lines in `usermods_list.cpp` and compile!  
+Uncomment the lines `#define USERMOD_GPS_TIME` in `usermods_list.cpp` and compile!  
 
 ## GPS Module
 The usermod was tested with:

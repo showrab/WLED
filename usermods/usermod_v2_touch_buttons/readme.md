@@ -1,32 +1,26 @@
-# Usermods Access-Point-Mode Off
+# Usermods Touch Buttons
 
-If you have no WLAN, the AP-Mode is turned on automaticly. But you would like to disable the AP-Mode (because of LED Flickering in AP-Mode).
+With the Lolin ESP32s2mini the touch buttons don't work.
+Reading with `int value = touchRead(pin)` the value is rising when touching the touch button. The value is ~15000 without touching. 
 
-This usermod turns the AP-Mode by default **off**.
+This usermod takes all defined touch buttons in Config->LED Preferences->Hardware setup
+![Button configuration](images/LedPreferences_Buttons.png)
+ and handles the touch if a value is bigger by 700 than the last value.
 
-To turn **on** the AP-Mode again you can press a button. Another press of the button turns the AP-Mode **off** again.
+In this Example just Button 1 and 2 are handled in this usermod.
 
-If connection to a Router (Sta-Mode), this usermod does not have any effect.
 
 ## Warning
 Touch Buttons are only on Pin 2,4,12,13,14,15,27,32,33 possible. 
 
-If you misconfigured the buttons and can not enter in AP-Mode. You have to press the button 0 (Button on ESP32 Board) for 6s. This deletes the network configuration and turns on the AP-Mode after. Now you have to reconfigure the WiFi settings an can change the usermod button setting.
-
 ## Installation 
 
-Uncomment the corresponding lines in `usermods_list.cpp` and compile!  
+Uncomment the line `#define USERMOD_TOUCH_BUTTONS` in `usermods_list.cpp` and compile!  
 
 ## Button
-Push-button 
+Touch button definition for the BaernerZyt Usermod 
 
-| Push Button | ESP32 |
-|-------|---|
-| 1  | Pin 33 (Change in config)|
-| 2 | GND|
-
-Touch-button 
-
-| Touch Button | ESP32 |
-|-------|---|
-| alu/copper-foil  | Pin 4 (Change in config)|
+| Touch Button | ESP32 | Comment |
+|-------|---|---|
+| Alu/Cupper foil | Pin 13 | Preset 20 to change Brightness |
+| Alu/Cupper foil | Pin 14 | Preset 30 to change Effect

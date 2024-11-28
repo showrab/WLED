@@ -15,18 +15,21 @@ If you misconfigured the buttons and can not enter in AP-Mode. You have to press
 
 ## Installation 
 
-Uncomment the corresponding lines in `usermods_list.cpp` and compile!  
+Uncomment the lines `#define USERMOD_AP_MODE_OFF`in `usermods_list.cpp` and compile!  
 
 ## Button
-Push-button 
+### Push-button 
 
 | Push Button | ESP32 |
 |-------|---|
 | 1  | Pin 33 (Change in config)|
 | 2 | GND|
 
-Touch-button 
 
-| Touch Button | ESP32 |
-|-------|---|
-| alu/copper-foil  | Pin 4 (Change in config)|
+### Touch-button 
+Button configuration for BaernerZyt usermod
+
+| Touch Button | ESP32 | comment |
+|-------|---|---|
+| Alu/Copper foil  | Pin 4 | foil around 4th minute LED |
+
