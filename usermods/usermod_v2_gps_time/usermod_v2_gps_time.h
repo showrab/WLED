@@ -43,6 +43,8 @@ class GpsTimeUsermod : public Usermod {
 
     // string that are used multiple time (this will save some flash memory)
     static const char _name[];
+
+    // Timezone* tz;
   public:
 
     // non WLED related methods, may be used for data exchange between usermods (non-inline methods should be defined out of class)
@@ -70,7 +72,7 @@ class GpsTimeUsermod : public Usermod {
       
       //GPS an Serial-1 RX = 37
       Serial1.begin(9600,SERIAL_8N1,serial1RxPin,39);
-      strcpy(state, "initDone");
+      strcpy(state, "init done");
     }
 
     /*
@@ -79,7 +81,7 @@ class GpsTimeUsermod : public Usermod {
      */
     void connected() {
       //Serial.println("Connected to WiFi!");
-      strcpy(state, "WiFiConected");
+      strcpy(state, "WiFi conected");
     }
 
     /*
@@ -189,6 +191,8 @@ class GpsTimeUsermod : public Usermod {
 
               unsigned int unixTime =  (((year/4*(365*4+1)+ days[year%4][month] + day)*24+hours)*60+minutes)*60+seconds;
 
+              // unsigned int unixTime = tz->toUTC(getUnixTime(hours, minutes, seconds, day, month, year));
+
               // Serial.print(dd);
               // Serial.print(".");
               // Serial.print(mm);
@@ -230,6 +234,20 @@ class GpsTimeUsermod : public Usermod {
         }
       }
     }
+
+// void initTimezone() {
+//   delete tz;
+//   TimeChangeRule tcrDaylight, tcrStandard;
+//   auto tz_table_entry = currentTimezone;
+//   if (tz_table_entry >= TZ_COUNT) {
+//     tz_table_entry = 0;
+//   }
+//   tzCurrent = currentTimezone;
+//   memcpy_P(&tcrDaylight, &TZ_TABLE[tz_table_entry].first, sizeof(tcrDaylight));
+//   memcpy_P(&tcrStandard, &TZ_TABLE[tz_table_entry].second, sizeof(tcrStandard));
+
+//   tz = new Timezone(tcrDaylight, tcrStandard);
+// }
 
     /*
      * addToJsonInfo() can be used to add custom entries to the /json/info part of the JSON API.

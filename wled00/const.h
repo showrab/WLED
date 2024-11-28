@@ -155,6 +155,7 @@
 #define USERMOD_ID_BAERNERZYT            45     //Usermod "usermod_v2_baerner_zyt.h"
 #define USERMOD_ID_GPS_TIME              46     //Usermod "usermod_v2_gps_time.h"
 #define USERMOD_ID_AP_MODE_OFF           47     //Usermod "usermod_v2_ap-mode_off.h"
+#define USERMOD_ID_TOUCH_BUTTONS         48     //Usermod "usermod_v2_touch_button.h"
 
 
 //Access point behavior

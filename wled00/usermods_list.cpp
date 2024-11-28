@@ -6,6 +6,7 @@
 #define USERMOD_BAERNERZYT
 #define USERMOD_GPS_TIME
 #define USERMOD_AP_MODE_OFF
+#define USERMOD_TOUCH_BUTTONS
 
 /*
  * Add/uncomment your usermod filename here (and once more below)
@@ -220,6 +221,10 @@
   #include "../usermods/usermod_v2_ap-mode_off/usermod_v2_ap-mode_off.h"
 #endif
 
+#ifdef USERMOD_TOUCH_BUTTONS
+  #include "../usermods/usermod_v2_touch_buttons/usermod_v2_touch_buttons.h"
+#endif
+
 void registerUsermods()
 {
 /*
@@ -412,8 +417,12 @@ void registerUsermods()
   usermods.add(new GpsTimeUsermod());
   #endif
 
-    #ifdef USERMOD_AP_MODE_OFF
+  #ifdef USERMOD_AP_MODE_OFF
   usermods.add(new ApModeOffUsermod());
+  #endif
+
+  #ifdef USERMOD_TOUCH_BUTTONS
+  usermods.add(new TouchButtonsUsermod());
   #endif
 }
 
