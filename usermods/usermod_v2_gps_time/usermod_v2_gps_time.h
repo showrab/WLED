@@ -125,11 +125,11 @@ class GpsTimeUsermod : public Usermod {
           if (Serial1.available()) {                // If anything comes in Serial-1
             readString=Serial1.readStringUntil(13); // NMEA data ends with 'return' character, which is ascii(13)
             readString.trim();                      // they say NMEA data starts with "$", but the Arduino doesn't think so.
-            //Serial.println(readString);           // All the raw sentences will be sent to monitor, if you want them, maybe to see the labels and data order.
+            // Serial.println(readString);           // All the raw sentences will be sent to monitor, if you want them, maybe to see the labels and data order.
 
             //Start Parsing by finding data, put it in a string of character array, then removing it, leaving the rest of thes sentence for the next 'find'
             if (readString.startsWith("$GPRMC")) {   // I picked this sentence, you can pick any of the other labels and rearrange/add sections as needed. 
-              //Serial.println(readString);          // display raw GPRMC data in Serial Monitor
+              // Serial.println(readString);          // display raw GPRMC data in Serial Monitor
 
               //Time is first in RMC sentence. Format: hhmmss.ss
               int pos=readString.indexOf(',');       // look for comma delimetrer

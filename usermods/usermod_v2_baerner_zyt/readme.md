@@ -1,5 +1,5 @@
 # Bärner Zyt (Word Clock) Usermod V2
-
+0,57
 This usermod drives an max 16x16 pixel matrix wordclock with WLED. There are 4 additional dots for the minutes. 
 ![BärnerZyt](images/BärnerZyt.png)
 

@@ -22,5 +22,6 @@ Touch button definition for the BaernerZyt Usermod
 
 | Touch Button | ESP32 | Comment |
 |-------|---|---|
-| Alu/Cupper foil | Pin 13 | Preset 20 to change Brightness |
-| Alu/Cupper foil | Pin 14 | Preset 30 to change Effect
+| Alu/Cupper foil | Pin 3 | Preset 30 to change Effect |
+| Alu/Cupper foil | Pin 5 | Preset 20 to change Brightness |
+

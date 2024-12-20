@@ -83,6 +83,7 @@ class ApModeOffUsermod : public Usermod {
           } else {
             apModeOn();
           }
+          wasAPModeOffButtonLow = false;
           init = false;
         }
         newIntervall = millis();

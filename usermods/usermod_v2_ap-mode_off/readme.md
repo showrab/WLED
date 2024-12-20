@@ -31,5 +31,6 @@ Button configuration for BaernerZyt usermod
 
 | Touch Button | ESP32 | comment |
 |-------|---|---|
-| Alu/Copper foil  | Pin 4 | foil around 4th minute LED |
+| Alu/Copper foil  | Pin 7 | foil around 4th minute LED or under the two most right letters |
+
 

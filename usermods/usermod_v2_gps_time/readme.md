@@ -26,6 +26,6 @@ Connect the four pins from UBLOX to an Arduino as follows:
 | Ublox | ESP32 |
 |-------|---|
 | GND | GND|
-| TX  | RX Pin 37 (Change in config)|
+| TX  | RX Pin 18 (Change in config)|
 | Vcc | 5Vdc or 3.3Vdc|
 

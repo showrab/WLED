@@ -97,8 +97,15 @@ class TouchButtonsUsermod : public Usermod {
       trigger = lastTouch[button] + THRESHOLD;
       if (isPressed = touchValue >= trigger) { 
         shortPressAction(button);
+        // Serial.print("touch[");
+        // Serial.print(button);
+        // Serial.print("]=");
+        // Serial.print(touchValue);
+        // Serial.print(", trigger = ");
+        // Serial.print(trigger);
+        // Serial.println();
       } else {
-        lastTouch[button] = touchValue;
+        lastTouch[button] = (lastTouch[button] + touchValue) / 2;
       }
     }
 
