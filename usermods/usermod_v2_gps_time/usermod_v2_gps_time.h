@@ -27,7 +27,7 @@ class GpsTimeUsermod : public Usermod {
   private:
     //GPS
     long targetTime = 0;
-    int8_t serial1RxPin = 37;
+    int8_t serial1RxPin = 18;
     //Serial1
     boolean isFlushed = false;
     String readString;
@@ -100,6 +100,7 @@ class GpsTimeUsermod : public Usermod {
       if (!enabled || strip.isUpdating()) return;
 
       //GPS String an Serial-1 parsen
+      //$GNRMC,213629.000,A,4646.5895,N,00737.0115,E,0.00,0.00,170125,,,A*7A
       //$GPRMC,191636.00,A,4646.35372,N,00736.67504,E,1.213,,080924,,,A*7E
       //        | | |  |                                      | | |
       //        | | |  ms                                     | | YY
@@ -128,7 +129,8 @@ class GpsTimeUsermod : public Usermod {
             // Serial.println(readString);           // All the raw sentences will be sent to monitor, if you want them, maybe to see the labels and data order.
 
             //Start Parsing by finding data, put it in a string of character array, then removing it, leaving the rest of thes sentence for the next 'find'
-            if (readString.startsWith("$GPRMC")) {   // I picked this sentence, you can pick any of the other labels and rearrange/add sections as needed. 
+            if (readString.startsWith("$GPRMC")
+             || readString.startsWith("$GNRMC")) {   // I picked this sentence, you can pick any of the other labels and rearrange/add sections as needed. 
               // Serial.println(readString);          // display raw GPRMC data in Serial Monitor
 
               //Time is first in RMC sentence. Format: hhmmss.ss
