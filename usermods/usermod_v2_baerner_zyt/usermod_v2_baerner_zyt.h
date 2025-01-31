@@ -22,7 +22,7 @@ class BaernerZytUsermod : public Usermod {
     unsigned long lastTime_2 = 0;
     int minUp = 0;
     int hourUp = 0;
-    int lastTimeMinutes = 0;
+    int lastTimeMinutes = 99;
     int lastTimeHours = 0;
 
     // set your config variables to their boot default value (this can also be done in readFromConfig() or a constructor if you prefer)

@@ -31,6 +31,7 @@ class GpsTimeUsermod : public Usermod {
     //Serial1
     boolean isFlushed = false;
     String readString;
+    boolean gotGPS = false;
 
     // Private class members. You can declare variables and functions only accessible to your usermod here
     char state[30] = "starting";
@@ -39,7 +40,7 @@ class GpsTimeUsermod : public Usermod {
     // These config variables have defaults set inside readFromConfig()
     bool enabled = false;
     int period;
-    long loopPeriod = 2*60;
+    long loopPeriod = 20;
 
     // string that are used multiple time (this will save some flash memory)
     static const char _name[];
@@ -126,12 +127,14 @@ class GpsTimeUsermod : public Usermod {
           if (Serial1.available()) {                // If anything comes in Serial-1
             readString=Serial1.readStringUntil(13); // NMEA data ends with 'return' character, which is ascii(13)
             readString.trim();                      // they say NMEA data starts with "$", but the Arduino doesn't think so.
-            // Serial.println(readString);           // All the raw sentences will be sent to monitor, if you want them, maybe to see the labels and data order.
+            if (!gotGPS) {
+              Serial.println(readString);           // All the raw sentences will be sent to monitor, if you want them, maybe to see the labels and data order.
+            }
 
             //Start Parsing by finding data, put it in a string of character array, then removing it, leaving the rest of thes sentence for the next 'find'
             if (readString.startsWith("$GPRMC")
              || readString.startsWith("$GNRMC")) {   // I picked this sentence, you can pick any of the other labels and rearrange/add sections as needed. 
-              // Serial.println(readString);          // display raw GPRMC data in Serial Monitor
+              Serial.println(readString);          // display raw GPRMC data in Serial Monitor
 
               //Time is first in RMC sentence. Format: hhmmss.ss
               int pos=readString.indexOf(',');       // look for comma delimetrer
@@ -231,6 +234,7 @@ class GpsTimeUsermod : public Usermod {
               Serial1.end();
               loopPeriod = period;
               targetTime = millis();   // change scheduled time exactly, no slippage will happen
+              gotGPS = true;
             }
           }
         }

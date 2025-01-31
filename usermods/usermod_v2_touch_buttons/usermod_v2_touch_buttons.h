@@ -93,22 +93,24 @@ class TouchButtonsUsermod : public Usermod {
       bool isPressed = false;
       // read touch button value:
       int touchValue = touchRead(pin);
-      
       trigger = lastTouch[button] + THRESHOLD;
-        // Serial.print("touch[");
-        // Serial.print(button);
-        // Serial.print("]=");
-        // Serial.print(touchValue);
-        // Serial.print(", trigger = ");
-        // Serial.print(trigger);
-        // Serial.println();
+      
+      
       if (isPressed = touchValue >= trigger) { 
         shortPressAction(button);
 
-      } else {
-       
+        Serial.print("touch[");
+        Serial.print(pin);
+        Serial.print("]=");
+        Serial.print(lastTouch[button]);
+        Serial.print("->");
+        Serial.print(touchValue);
+        Serial.print(", trigger = ");
+        Serial.print(trigger);
+        Serial.print(" ON");
+        Serial.println(); 
       }
-       lastTouch[button] = touchValue ;
+      lastTouch[button] = touchValue ;
     }
 
     /**

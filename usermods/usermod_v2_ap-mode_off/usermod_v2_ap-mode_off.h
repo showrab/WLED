@@ -17,7 +17,7 @@ class ApModeOffUsermod : public Usermod {
     // Push-Button
     int newIntervall = 0;
     int8_t buttonPin = 33;            //Button is connected to this pin and ground
-    bool isTouchButton = false;       //is button a tocuh button?
+    bool isTouchButton = true;       //is button a tocuh button?
     bool wasAPModeOffButtonLow = true;
     // Usermod
     static const char _name[];
@@ -57,6 +57,9 @@ class ApModeOffUsermod : public Usermod {
         pinMode(buttonPin, INPUT_PULLUP);
         init = true; //at startup disable AP-Mode
         Serial.println("ApModeOffUsermod setup");
+        Serial.println(enabled?"  enabled":"   disabled");
+        Serial.print("   Button Pin:");
+        Serial.println(buttonPin);
       }
     }
 
@@ -93,24 +96,40 @@ class ApModeOffUsermod : public Usermod {
     boolean buttonPressed() {
       bool isAPModeOffButtonPressed;
       int trigger;
+      int buttonValue;
 
       if (isTouchButton) {
         // read touch button value:
-        int touchValue = touchRead(buttonPin);
-        
+        buttonValue = touchRead(buttonPin);
         trigger = lastTouch + THRESHOLD;
-        if (isAPModeOffButtonPressed = touchValue >= trigger) { } else {
+        if (isAPModeOffButtonPressed = buttonValue >= trigger) { } else {
           wasAPModeOffButtonLow = true;
-          lastTouch = touchValue;
         }
       } else {
         //read push button value
-        int buttonPressed = digitalRead(buttonPin);
-        if (isAPModeOffButtonPressed = buttonPressed) { } else {
+        buttonValue = digitalRead(buttonPin);
+        if (isAPModeOffButtonPressed = buttonValue) { } else {
           wasAPModeOffButtonLow = true;
         };
       }
       bool ret = isAPModeOffButtonPressed && wasAPModeOffButtonLow;
+      if (ret) {
+        if (isTouchButton) {
+          Serial.print("touch[");
+        } else {
+          Serial.print("button[");
+        }
+        Serial.print(buttonPin);
+        Serial.print("]=");
+        Serial.print(lastTouch);
+        Serial.print("->");
+        Serial.print(buttonValue);
+        Serial.print(", trigger = ");
+        Serial.print(trigger);      
+        Serial.print(" ON");
+        Serial.println();
+      }
+      lastTouch = buttonValue;
       return ret;
     }
 
