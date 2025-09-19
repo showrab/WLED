@@ -47,6 +47,7 @@
                           LAYOUT_COLS_6,\
                           LAYOUT_COLS_7,\
                           LAYOUT_COLS_8,\
+                          LAYOUT_COLS_9,\
                           //insert new layout here
     #define IT_IS         {-1},\
                           {IT_IS_1},\
@@ -57,6 +58,7 @@
                           {IT_IS_6},\
                           {IT_IS_7},\
                           {IT_IS_8},\
+                          {IT_IS_9},\
                           //insert new layout here
     #define MINUTES       {-1},\
                           {MINUTES_ARRAY(1)},\
@@ -67,6 +69,7 @@
                           {MINUTES_ARRAY(6)},\
                           {MINUTES_ARRAY(7)},\
                           {MINUTES_ARRAY(8)},\
+                          {MINUTES_ARRAY(9)},\
                           //insert new layout here
                           
     #define NEXT_HOUR     -1,\
@@ -78,6 +81,7 @@
                           NEXT_HOUR_6,\
                           NEXT_HOUR_7,\
                           NEXT_HOUR_8,\
+                          NEXT_HOUR_9,\
                           //insert new layout here
     #define HOUR_COLOR    0,\
                           HOUR_COLOR_1,\
@@ -88,6 +92,7 @@
                           HOUR_COLOR_6,\
                           HOUR_COLOR_7,\
                           HOUR_COLOR_8,\
+                          HOUR_COLOR_9,\
                           //insert new layout here
     #define HOURS         {-1},\
                           {HOURS_ARRAY(1)},\
@@ -98,6 +103,7 @@
                           {HOURS_ARRAY(6)},\
                           {HOURS_ARRAY(7)},\
                           {HOURS_ARRAY(8)},\
+                          {HOURS_ARRAY(9)},\
                           //insert new layout here
     #define MINUTE_COLOR  0,\
                           MINUTE_COLOR_1,\
@@ -108,6 +114,7 @@
                           MINUTE_COLOR_6,\
                           MINUTE_COLOR_7,\
                           MINUTE_COLOR_8,\
+                          MINUTE_COLOR_9,\
                           //insert new layout here
     #define MINUTE_DOTS   {-1},\
                           {MINUTE_DOTS_1},\
@@ -118,6 +125,7 @@
                           {MINUTE_DOTS_6},\
                           {MINUTE_DOTS_7},\
                           {MINUTE_DOTS_8},\
+                          {MINUTE_DOTS_9},\
                           //insert new layout here
     #define MINUTE_WORDS  {{-1}},\
                           {MINUTE_WORDS_ARRAY(1)},\
@@ -128,6 +136,7 @@
                           {MINUTE_WORDS_ARRAY(6)},\
                           {MINUTE_WORDS_ARRAY(7)},\
                           {MINUTE_WORDS_ARRAY(8)},\
+                          {MINUTE_WORDS_ARRAY(9)},\
                           //insert new layout here
 
 
