@@ -465,7 +465,7 @@
     //120-131  Y-CINCO_EN--
     //132-143  PUNTOminutos
     #define LAYOUT_COLS_9 12
-    #define IT_IS_9       -1
+    #define IT_IS_9       LAS_9,-1
     #define MINUTE_DOTS_9 144, 145, 146, 147
     #define PLUS_1_9      144,-1
     #define PLUS_2_9      144,145,-1
@@ -477,7 +477,7 @@
     #define AB_9          95                            //Y
     #define VOR_9         36,37,38,39                   //PARA
     #define LAS_9         43,44,45                      //LAS
-    #define ZERO_MIN_9     LAS_9, 128,129, 132,133,134,134,135    //LAS .. EN PUNTO
+    #define ZERO_MIN_9    LAS_9, 128,129, 132,133,134,134,135    //LAS .. EN PUNTO
     #define MIDDAY_MIN_9   -1
     #define MIDNIGHT_MIN_9 -1
     #define MINUTOS_9     137,138,139,140,141,142,143
@@ -498,7 +498,7 @@
     #define SON_9         3,4,5
     #define ZERO_9        SON_9, 84,85,86,87,        -1    //SON DOCE
     #define EIS_9         ES_9, 66,67,68,            -1    //ES UNA 6
-    #define ZWOEI_9       SON_9, 87,88,89,90,        -1    //SON DOS
+    #define ZWOEI_9       SON_9, 69,70,71,           -1    //SON DOS
     #define DRUE_9        SON_9, 48,49,50,51,        -1    //SON TRES
     #define VIERI_9       SON_9, 60,61,62,63,64,65         //SON QUARTRO
     #define FUEFI_9       7,8,9, 122,123,124,125,126,-1    //SON CINCO
