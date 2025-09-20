@@ -474,23 +474,23 @@
     #define NEXT_HOUR_9   1
 
     #define MINUTE_COLOR_9 1
-    #define ZERO_MIN_9     LAS_9, 128,129, 132,133,134,134 //LAS .. EN PUNTO
-    #define MIDDAY_MIN_9   -1
-    #define MIDNIGHT_MIN_9 -1
-    #define MINUTOS_9     137,138,139,140,141,142,143
-    #define FUEF_9        AB_9, 122,123,124,125,126,                        MINUTOS_9 //Y CINCO MINUTOS
-    #define ZAEH_9        AB_9, 109,110,111,112,                            MINUTOS_9 //Y DIEZ MINUTOS
-    #define VIERTU_9      AB_9, 114,115,116,117,118,119,                    MINUTOS_9 //Y CUARTO MINUTOS
-    #define ZWAENZG_9     AB_9, 97,98,99,100,101,012,                       MINUTOS_9 //Y VIENTE MINUTOS
-    #define TWENTY_FIVE_9 AB_9, 97,98,99,100,101,012,25,122,123,124,125,126,MINUTOS_9 //Y VIENTE Y CINCO MINUTOS 
-    #define HAUBI_9       AB_9, 103,104,105,106,107               //media
     #define AB_9          95                            //Y
     #define VOR_9         36,37,38,39                   //PARA
     #define LAS_9         43,44,45                      //LAS
+    #define ZERO_MIN_9     LAS_9, 128,129, 132,133,134,134,135    //LAS .. EN PUNTO
+    #define MIDDAY_MIN_9   -1
+    #define MIDNIGHT_MIN_9 -1
+    #define MINUTOS_9     137,138,139,140,141,142,143
+    #define FUEF_9        AB_9, 122,123,124,125,126,                           MINUTOS_9 //Y CINCO MINUTOS
+    #define ZAEH_9        AB_9, 109,110,111,112,                               MINUTOS_9 //Y DIEZ MINUTOS
+    #define VIERTU_9      AB_9, 114,115,116,117,118,119,                       MINUTOS_9 //Y CUARTO MINUTOS
+    #define ZWAENZG_9     AB_9, 97,98,99,100,101,102,                          MINUTOS_9 //Y VIENTE MINUTOS
+    #define TWENTY_FIVE_9 AB_9, 97,98,99,100,101,102, 120, 122,123,124,125,126,MINUTOS_9 //Y VIENTE Y CINCO MINUTOS 
+    #define HAUBI_9       AB_9, 103,104,105,106,107               //media
     #define THIRTY_FIVE_9 18,19,20,21,22,23,25,31,32,33,34,35,VOR_9, LAS_9 //VEINTE Y CINCO PARA LAS
     #define FOURTY_9      18,19,20,21,22,23,                  VOR_9, LAS_9 //veinte PARA LAS
     #define FOURTY_FIVE_9 12,13,14,15,16,17,                  VOR_9, LAS_9 //CUARTO PARA LAS
-    #define FIFTY_9       24,25,26,27,                        VOR_9, LAS_9 //DIEZ PARA LAS
+    #define FIFTY_9       26,27,28,29,                        VOR_9, LAS_9 //DIEZ PARA LAS
     #define FIFTY_FIVE_9  31,32,33,34,35,                     VOR_9, LAS_9 //CINCO PARA LAS
 
     #define HOUR_COLOR_9  1
@@ -501,7 +501,7 @@
     #define ZWOEI_9       SON_9, 87,88,89,90,        -1    //SON DOS
     #define DRUE_9        SON_9, 48,49,50,51,        -1    //SON TRES
     #define VIERI_9       SON_9, 60,61,62,63,64,65         //SON QUARTRO
-    #define FUEFI_9       7,8,9, 72,73,74,75,        -1    //SON CINCO
+    #define FUEFI_9       7,8,9, 122,123,124,125,126,-1    //SON CINCO
     #define SAECHSI_9     SON_9, 52,53,54,55,        -1    //SON seis
     #define SIBNI_9       SON_9, 73,74,75,76,77,     -1    //SON SIETE
     #define ACHTI_9       SON_9, 56,57,58,59,        -1    //SON OCHO
