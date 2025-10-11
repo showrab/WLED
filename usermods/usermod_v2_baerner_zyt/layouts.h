@@ -2,7 +2,7 @@
     #define maskSizeLeds          16*16 //Max size if matrix
     // Array size which defines how many letters can be used to write the words
     #define maskSizeMinutes       24    //Array size for minute words
-    #define maskSizeHours         9     //Array Size for hour words
+    #define maskSizeHours         12    //Array Size for hour words
     #define maskSizeItIs          24    //Array size for "It is"
     #define maskSizeMinuteDots    4     //Array size for minute dots
     #define maskSizeMinuteWords   9     //Array size for minutes as words
@@ -23,7 +23,7 @@
     // 99-109  -----ZWÖUFI
     //110-113  °°°°
     #define LAYOUT_COLS_1 11
-    #define IT_IS_1       0, 1, 3, 4, 5, 6,-1
+    #define IT_IS_1       0, 1, 3, 4, 5, 6, -1
     #define MINUTE_DOTS_1 110,111,112,113      
     #define PLUS_1_1      110,-1
     #define PLUS_2_1      110,111,-1
@@ -75,7 +75,7 @@
     // 77- 87  FACHTINÜNIF
     // 88- 98  IZÄHNI°°°°I
     #define LAYOUT_COLS_2 11
-    #define IT_IS_2       0, 1, 3, 4, 5, 6,-1
+    #define IT_IS_2       0, 1, 3, 4, 5, 6, -1
     #define MINUTE_DOTS_2 94, 95, 96, 97
     #define PLUS_1_2      94,-1
     #define PLUS_2_2      94,95,-1
@@ -128,7 +128,7 @@
     // 64- 71  FEUFIFNÜ
     // 72- 79  IRINÜNI-
     #define LAYOUT_COLS_3 8
-    #define IT_IS_3       1, 2, 4, 5, 6, 7,-1
+    #define IT_IS_3       1, 2, 4, 5, 6, 7, -1
     #define MINUTE_DOTS_3 25, 26, 33, 34
     #define PLUS_1_3      25,-1
     #define PLUS_2_3      25,33,-1
@@ -183,7 +183,7 @@
     //120-131  --ZÄNI--EUFI
     //132-143  ZWÖUFI-GSI--
     #define LAYOUT_COLS_4 12
-    #define IT_IS_4       2, 3, 5, 6, 7, 8,-1
+    #define IT_IS_4       2, 3, 5, 6, 7, 8, -1
     #define MINUTE_DOTS_4 16, 23, 28, 35
     #define PLUS_1_4      12,13,14,15,139,140,141,-1  //GRAD GSI
     #define PLUS_2_4      139,140,141,-1              //GSI
@@ -237,7 +237,7 @@
     // 80- 89  ACHTI-FÜFI
     // 90- 99  SÄCHSIBNI-
     #define LAYOUT_COLS_5 10
-    #define IT_IS_5       0, 1, 2, 3, 4, 5,-1
+    #define IT_IS_5       0, 1, 2, 3, 4, 5, -1
     #define MINUTE_DOTS_5 39, 49, 59, 69
     #define PLUS_1_5      39,-1
     #define PLUS_2_5      39,49,-1
@@ -290,7 +290,7 @@
     // 99-109  ZWÖUFI-VIVA
     //110-120  °°°°---ZÄME
     #define LAYOUT_COLS_6 11
-    #define IT_IS_6       0, 1, 3, 4, 5, 6,-1
+    #define IT_IS_6       0, 1, 3, 4, 5, 6, -1
     
     #define MINUTE_DOTS_6 110,111,112,113      
     
@@ -464,50 +464,59 @@
     //108-119  -DIEZ-CUARTO
     //120-131  Y-CINCO_EN--
     //132-143  PUNTOminutos
+    #define ES            1,2
+    #define SON           3,4,5
+    #define LA            43,44
+    #define LAS           43,44,45
+    #define LAS_1         7,8,9
+    #define CINCO         122,123,124,125,126
+    #define CINCO_1       31,32,33,34,35  
+    #define VEINTE        97,98,99,100,101,102
+    #define VEINTE_1      18,19,20,21,22,23
     #define LAYOUT_COLS_9 12
-    #define IT_IS_9       LAS_9,-1
+    #define HOUR_COLOR_9  1
+    #define MINUTOS     137,138,139,140,141,142,143
+
+    #define IT_IS_9       SON, -1
+    #define IT_IS_EZ_9    ES, -1
     #define MINUTE_DOTS_9 144, 145, 146, 147
-    #define PLUS_1_9      144,-1
-    #define PLUS_2_9      144,145,-1
-    #define MINUS_2_9     146,-1
-    #define MINUS_1_9     146,147,-1
+    #define PLUS_1_9      144, -1
+    #define PLUS_2_9      144,145, -1
+    #define MINUS_2_9     146, -1
+    #define MINUS_1_9     146,147, -1
     #define NEXT_HOUR_9   1
 
     #define MINUTE_COLOR_9 1
-    #define AB_9          95                            //Y
-    #define VOR_9         36,37,38,39                   //PARA
-    #define LAS_9         43,44,45                      //LAS
-    #define ZERO_MIN_9    LAS_9, 128,129, 132,133,134,134,135    //LAS .. EN PUNTO
+    #define AB_9          95                                //Y
+    #define VOR_9         36,37,38,39                       //PARA
+    
+    #define ZERO_MIN_9    128,129, 132,133,134,135,136      //EN PUNTO
     #define MIDDAY_MIN_9   -1
     #define MIDNIGHT_MIN_9 -1
-    #define MINUTOS_9     137,138,139,140,141,142,143
-    #define FUEF_9        AB_9, 122,123,124,125,126,                           MINUTOS_9 //Y CINCO MINUTOS
-    #define ZAEH_9        AB_9, 109,110,111,112,                               MINUTOS_9 //Y DIEZ MINUTOS
-    #define VIERTU_9      AB_9, 114,115,116,117,118,119,                       MINUTOS_9 //Y CUARTO MINUTOS
-    #define ZWAENZG_9     AB_9, 97,98,99,100,101,102,                          MINUTOS_9 //Y VIENTE MINUTOS
-    #define TWENTY_FIVE_9 AB_9, 97,98,99,100,101,102, 120, 122,123,124,125,126,MINUTOS_9 //Y VIENTE Y CINCO MINUTOS 
-    #define HAUBI_9       AB_9, 103,104,105,106,107               //media
-    #define THIRTY_FIVE_9 18,19,20,21,22,23,25,31,32,33,34,35,VOR_9, LAS_9 //VEINTE Y CINCO PARA LAS
-    #define FOURTY_9      18,19,20,21,22,23,                  VOR_9, LAS_9 //veinte PARA LAS
-    #define FOURTY_FIVE_9 12,13,14,15,16,17,                  VOR_9, LAS_9 //CUARTO PARA LAS
-    #define FIFTY_9       26,27,28,29,                        VOR_9, LAS_9 //DIEZ PARA LAS
-    #define FIFTY_FIVE_9  31,32,33,34,35,                     VOR_9, LAS_9 //CINCO PARA LAS
+    #define FUEF_9        AB_9, CINCO,              MINUTOS //.. Y CINCO MINUTOS
+    #define ZAEH_9        AB_9, 109,110,111,112,    MINUTOS //.. Y DIEZ MINUTOS
+    #define VIERTU_9      AB_9, 114,115,116,117,118,119     //.. Y CUARTO
+    #define ZWAENZG_9     AB_9, VEINTE,             MINUTOS //.. Y VEINTE MINUTOS
+    #define TWENTY_FIVE_9 AB_9, VEINTE, 120, CINCO, MINUTOS //.. Y VEINTE Y CINCO MINUTOS 
+    #define HAUBI_9       AB_9, 103,104,105,106,107         //.. Y media
+    #define THIRTY_FIVE_9 VEINTE_1,25,CINCO_1,        VOR_9 //VEINTE Y CINCO PARA ..
+    #define FOURTY_9      VEINTE_1,                   VOR_9 //veinte PARA ..
+    #define FOURTY_FIVE_9 12,13,14,15,16,17,          VOR_9 //ES UN CUARTO PARA ..
+    #define FIFTY_9       26,27,28,29,                VOR_9 //DIEZ PARA ..
+    #define FIFTY_FIVE_9  CINCO_1,                    VOR_9 //CINCO PARA ..
 
-    #define HOUR_COLOR_9  1
-    #define ES_9          1,2
-    #define SON_9         3,4,5
-    #define ZERO_9        SON_9, 84,85,86,87,        -1    //SON DOCE
-    #define EIS_9         ES_9, 66,67,68,            -1    //ES UNA 6
-    #define ZWOEI_9       SON_9, 69,70,71,           -1    //SON DOS
-    #define DRUE_9        SON_9, 48,49,50,51,        -1    //SON TRES
-    #define VIERI_9       SON_9, 60,61,62,63,64,65         //SON QUARTRO
-    #define FUEFI_9       7,8,9, 122,123,124,125,126,-1    //SON CINCO
-    #define SAECHSI_9     SON_9, 52,53,54,55,        -1    //SON seis
-    #define SIBNI_9       SON_9, 73,74,75,76,77,     -1    //SON SIETE
-    #define ACHTI_9       SON_9, 56,57,58,59,        -1    //SON OCHO
-    #define NUENI_9       SON_9, 89,90,91,92,93,     -1    //SON NUEVE
-    #define ZAEHNI_9      7,8,9, 26,27,28,29,        -1    //SON DIEZ
-    #define EUFI_9        SON_9, 79,80,81,82,        -1    //SON ONZE
+    #define ZERO_9        LAS, 84,85,86,87,              -1 //LAS DOCE
+    #define EIS_9         LA, 66,67,68,                  -1 //LA UNA 
+    #define ZWOEI_9       LAS, 69,70,71,                 -1 //LAS DOS
+    #define DRUE_9        LAS, 48,49,50,51,              -1 //LAS TRES
+    #define VIERI_9       LAS, 60,61,62,63,64,65,        -1 //LAS CUATRO
+    #define FUEFI_9       LAS_1,122,123,124,125,126,     -1 //LAS CINCO
+    #define SAECHSI_9     LAS, 52,53,54,55,              -1 //LAS seis
+    #define SIBNI_9       LAS, 73,74,75,76,77,           -1 //LAS SIETE
+    #define ACHTI_9       LAS, 56,57,58,59,              -1 //LAS OCHO
+    #define NUENI_9       LAS, 89,90,91,92,93,           -1 //LAS NUEVE
+    #define ZAEHNI_9      LAS_1,26,27,28,29,             -1 //LAS DIEZ
+    #define EUFI_9        LAS, 79,80,81,82,              -1 //LAS ONZE
     #define ZWOEUFI_9     ZERO_9
 
     //----------insert new layout here------------

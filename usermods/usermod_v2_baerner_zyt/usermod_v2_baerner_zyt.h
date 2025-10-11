@@ -33,6 +33,7 @@ class BaernerZytUsermod : public Usermod {
     bool displayItIs = true;
     bool minuteDots = true;
     bool minuteWords = true;
+    bool halfHourAfter = false; //false = fünf vor halb zwei; halb zwei; viertel vor zwei, true = 1:25; 1:30, 1:45
     int layout = 1;
     bool test = false;
 
@@ -40,7 +41,7 @@ class BaernerZytUsermod : public Usermod {
 
     //define arrays with the zyt-makros
     const int layoutCols[MAX_LAYOUTS] = { LAYOUT_COLS }; 
-    const int maskItIs[MAX_LAYOUTS][maskSizeItIs] = { IT_IS };
+    const int maskItIs[MAX_LAYOUTS][2][maskSizeItIs] = { IT_IS };
     const int maskMinutes[MAX_LAYOUTS][14][maskSizeMinutes] = { MINUTES };
     const int maskHours[MAX_LAYOUTS][13][maskSizeHours] = { HOURS };
     const int maskMinuteDots[MAX_LAYOUTS][maskSizeMinuteDots] = { MINUTE_DOTS };
@@ -122,7 +123,9 @@ class BaernerZytUsermod : public Usermod {
 
       // display "it is" if activated
       if (displayItIs) {
-        updateLedMask(maskItIs[layout], maskSizeItIs, layoutCols[layout], itIsColor);
+        int isEz = 0;
+        if (hours == 1 && minutes <= 34) isEz = 1;
+        updateLedMask(maskItIs[layout][isEz], maskSizeItIs, layoutCols[layout], itIsColor);
       }
 
       // modulo to get minute dots
@@ -135,6 +138,7 @@ class BaernerZytUsermod : public Usermod {
       if (minuteWords && minutesDotCount > 2 ) {
         minutes += 2;
       } 
+
       int nh = nextHour[layout]; //when minutes >=25 say next hour 7:25 -> fünf vor halb acht 
       
       int fullHourIndex = 0;
@@ -172,12 +176,20 @@ class BaernerZytUsermod : public Usermod {
         case 5:
             // 5 vor halb
             setMinutes(5);
-            setHours(hours + nh, false);
+            if (halfHourAfter) {
+              setHours(hours, false);       //HH:25
+            } else {
+              setHours(hours + nh, false);  //5 vor halb HH+1
+            }
             break;
         case 6:
             // halb
             setMinutes(6);
-            setHours(hours + nh, false);
+            if (halfHourAfter) {
+              setHours(hours, false);       //HH:30
+            } else {
+              setHours(hours + nh, false);  //halb HH+1
+            }
             break;
         case 7:
             // 5 nach halb
@@ -205,7 +217,7 @@ class BaernerZytUsermod : public Usermod {
             setHours(hours + nh, false);
             break;
         case 12:
-            // 2 vor (minutesWords)
+            // full hour
             setMinutes(0);
             setHours(hours + nh, false);
             break;
@@ -351,6 +363,7 @@ class BaernerZytUsermod : public Usermod {
       top[F("Zeige ES ISCH")] = displayItIs;
       top[F("Minuten-Punkte")] = minuteDots;
       top[F("Minuten ausgeschrieben")] = minuteWords;
+      top[F("Halbe Stunde nach Stunde")] =halfHourAfter;
       top[F("Layout")] = layout;
       top[F("Test")] = test;
     }
@@ -358,8 +371,9 @@ class BaernerZytUsermod : public Usermod {
     void appendConfigData() {
       oappend(SET_F("addInfo('BaernerZyt:LED Matrix Breite', 1, 'min 1, max 16');"));
       oappend(SET_F("addInfo('BaernerZyt:LED Matrix Höhe', 1, 'min 1, max 16');"));
-      oappend(SET_F("addInfo('BaernerZyt:Offset', 1, 'verschiebe Start');"));
-      oappend(SET_F("addInfo('BaernerZyt:Layout', 1, '0=16x16 off, 1=Melissa(11x10), 2=Chlie(11x9), 3=chliner(8x10), 4=Martin(12x12), 5=Andre(10x10), 6==Thomas(11x11), 7/8=Analog(10x10)');"));
+      oappend(SET_F("addInfo('BaernerZyt:Offset', 1, 'verschiebe Start');")); 
+      oappend(SET_F("addInfo('BaernerZyt:Halbe Stunde nach Stunde', 1, 'true=HH und halb; false=halb HH+1');")); 
+      oappend(SET_F("addInfo('BaernerZyt:Layout', 1, '0=16x16 off, 1=Melissa(11x10), 2=Chlie(11x9), 3=chliner(8x10), 4=Martin(12x12), 5=Andre(10x10), 6=Thomas(11x11), 7/8=Analog(10x10), 9=Alicia(12x12)Spanish');"));
       oappend(SET_F("addInfo('BaernerZyt:Test', 1, 'alle 3sec eine neue Zeit');"));
     }
 
@@ -392,6 +406,7 @@ class BaernerZytUsermod : public Usermod {
       configComplete &= getJsonValue(top[F("Offset")],  offset);
       configComplete &= getJsonValue(top[F("Minuten-Punkte")], minuteDots);
       configComplete &= getJsonValue(top[F("Minuten ausgeschrieben")], minuteWords);
+      configComplete &= getJsonValue(top[F("Halbe Stunde nach Stunde")], halfHourAfter);
       configComplete &= getJsonValue(top[F("Layout")], layout);
       configComplete &= getJsonValue(top[F("Test")], test);
 

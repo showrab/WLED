@@ -49,16 +49,16 @@
                           LAYOUT_COLS_8,\
                           LAYOUT_COLS_9,\
                           //insert new layout here
-    #define IT_IS         {-1},\
-                          {IT_IS_1},\
-                          {IT_IS_2},\
-                          {IT_IS_3},\
-                          {IT_IS_4},\
-                          {IT_IS_5},\
-                          {IT_IS_6},\
-                          {IT_IS_7},\
-                          {IT_IS_8},\
-                          {IT_IS_9},\
+    #define IT_IS         {{-1}, {-1}},\
+                          {{IT_IS_1}, {IT_IS_1}},\
+                          {{IT_IS_2}, {IT_IS_2}},\
+                          {{IT_IS_3}, {IT_IS_3}},\
+                          {{IT_IS_4}, {IT_IS_4}},\
+                          {{IT_IS_5}, {IT_IS_5}},\
+                          {{IT_IS_6}, {IT_IS_6}},\
+                          {{IT_IS_7}, {IT_IS_7}},\
+                          {{IT_IS_8}, {IT_IS_8}},\
+                          {{IT_IS_9}, {IT_IS_EZ_9}},\
                           //insert new layout here
     #define MINUTES       {-1},\
                           {MINUTES_ARRAY(1)},\
