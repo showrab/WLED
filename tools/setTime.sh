@@ -33,11 +33,11 @@ fi
 for i in {0..287}
 do
     # Überprüfen ob Parameter leer sind, sonst Standardwerte setzen
-    if [ -z "$mm" ]; then
+    if [ -z "$2" ]; then
         #alle 5 minuten 
         mm=$((i * 5))
     fi
-    if [ -z "$hh" ]; then
+    if [ -z "$1" ]; then
         hh=$((($mm / 60 % 24)))
     fi
 
