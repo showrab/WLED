@@ -452,19 +452,6 @@
     #define ZWOEUFI_8     ZERO_8   
   
     //----------Layout 9 Alicia (12x12 Spanisch)------------
-    //  0- 11  -ESSON-LAS--
-    // 12- 23  CUARTOveinte
-    // 24- 35  -YDIEZ-CINCO
-    // 36- 47  PARA---LAS--
-    // 48- 59  TRESseisOCHO
-    // 60- 71  CUARTOunaDOS
-    // 72- 83  -SIETE-ONCE-
-    // 84- 95  DOCE-NUEVE-Y
-    // 96-107  -VEINTEmedia
-    //108-119  -DIEZ-CUARTO
-    //120-131  Y-CINCO_EN--
-    //132-143  PUNTOminutos
-
     //  0- 11  ESON-CUARTO- 15
     // 12- 23  veinte_DIEZ- 20 10
     // 24- 35  Y-CINCO_PARA 5
