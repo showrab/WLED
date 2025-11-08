@@ -1,5 +1,5 @@
 # Bärner Zyt (Word Clock) Usermod V2
-0,57
+
 This usermod drives an max 16x16 pixel matrix wordclock with WLED. There are 4 additional dots for the minutes. 
 ![BärnerZyt](images/BärnerZyt.png)
 
@@ -101,7 +101,22 @@ These are the parameters that controls the behavior of "Bärner Zyt" in the WLED
 
 ## WiFi Configuration
 Description on how to [connect your Bärner-Zyt to your Router](WiFiSetup_de.md) or scann this QR-Code un the back of your "Bärner-Zyt" watch.
+
 <img src="images/qr-code.png" alt="QR-Code" title="QR-Code" width=300/>
+
+## GPS Configuration
+If there is no internet or for an easier user interaction, you can connect a GPS-Module to the watch. With this QR-Code you find the User Description. 
+
+In English: 
+
+<img src="images/qr-code-gps_en.png" 
+alt="QR-Code" title="QR-Code" width=300/>
+
+In German: 
+
+<img src="images/qr-code-gps.png" 
+alt="QR-Code" title="QR-Code" width=300/>
+
 
 ## Layouts
 
@@ -146,11 +161,10 @@ See [usermod_v2_gps_time](../usermod_v2_gps_time/readme.md)  description.
 
 ### AP-Mode Off Usermod
 The problem without internet, the WLED turns on an own Acces Point. This is needed to configure the WLED. But it also result in strong flikering of the LEDs. So this Usermod turns the AP-Mode off. With a button press you can turn the AP ON/OFF. The touch button is around the 4th minute LED.
-
 See [usermod_v2_ap-mode_off](../usermod_v2_ap-mode_off/readme.md) description.
 
-### Touch Buttons 
-If you don't like to change the effects or brightness of your BaernerZyt there are two buttons you can do this. The touch buttons are around the 1st and 2nd minute LED.
+### (Touch) Buttons 
+If you don't like to change the effects or brightness of your BaernerZyt there are two buttons you can do this. The buttons are under or in top of the frame.
 
 See [usermod_v2_gps_time](../usermod_v2_touch_buttons/readme.md) description.
 
@@ -178,7 +192,13 @@ Or use a GPS-Modul with the [usermod_v2_gps_time](../usermod_v2_gps_time/readme.
 
 ## Change Log
 
-2024/02/09 initial commit
+* 2024-02-09 initial commit
+* 2024-03-23 separate file for layouts
+* 2024-11-02 added GPS-Module
+* 2024-11-16 Access Point Off Usermod
+* 2024-11-28 TouchButtons Usermod
+* 2025-09-19 Spanish (Alicia) layout
+* 2025-10-24 Alicia and Melissa firmware BIN-file added
 
 # Hardware
 ## Microcontroller
@@ -248,6 +268,22 @@ Layout with special words every hour and at midnight
 
 #### 8=Analog(9x9)
 9x9 Analog clock. Just for fun
+
+#### 9=Alicia(12x12 + 4)
+```
+E S O N - C U A R T O -
+v e i n t e _ D I E Z -
+Y - C I N C O _ P A R A
+L A S u n a C U A T R O
+- T R E S e i S I E T E
+O N C E D O S N U E V E
+D O C E C I N C O C H O
+D I E Z - Y - M E D I A
+V E I N T E - Y D I E Z
+C U A R T O - C I N C O
+- E N - m i n u t o s -
+P U N T O   A L I C I A
+`````
 
 ## Grid
 ## Backplane
